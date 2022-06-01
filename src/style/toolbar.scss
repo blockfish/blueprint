@@ -15,9 +15,6 @@ section.toolbar {
     }
 
     .page-index {
-        // TODO [#17]: figure out some flex box tricks to get this to be centered wrt the
-        // board, i.e. the area from the far left side of the controls bar to the
-        // separator
         text-align: center;
         flex-grow: 1;
     }

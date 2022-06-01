@@ -1,11 +1,9 @@
+// TODO [#4] add bots analysis support
 const Body = React.memo(({
-}) => {
-    // TODO [#10 #16]
-    return (
-        <>
-        </>
-    );
-});
+}) => (
+    <>
+    </>
+));
 
 module.exports = {
     title: 'Analysis',

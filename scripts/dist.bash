@@ -24,7 +24,7 @@ root="${tmpdir}/root"
 
 npm install . --production=true || exit 1
 
-# TODO: lint css / js ?
+# TODO [#12] should lint before building
 
 npx esbuild ./src/app --outdir="${tmpdir}" \
     --bundle \

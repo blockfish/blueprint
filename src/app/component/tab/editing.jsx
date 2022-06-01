@@ -25,7 +25,7 @@ const Body = React.memo(({
     let togglePiece = (page.piece || !page.queue.isEmpty) ? action.togglePiece : null;
     let hasRandomizer = !!page.queue.randomizer;
 
-    // TODO [#31]
+    // TODO [#7] cheese garbage
     // let [garbage, setGarbage] = React.useState(false);
 
     return (

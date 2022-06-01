@@ -5,7 +5,7 @@ export function usePalette() {
 }
 
 function init() {
-    // TODO [#23] init from localstorage
+    // TODO [#2] init from localstorage
     return new Palette('g', true);
 }
 

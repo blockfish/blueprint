@@ -2,6 +2,8 @@ import { Button } from '../../component/button'
 import { Keybindings } from '../../component/keybindings'
 import { Slider } from '../../component/slider'
 
+// TODO [#8] this list is huge, we should have multiple tabs
+
 const ACTIONS = [
     { action: 'undo',      label: 'Undo' },
     { action: 'redo',      label: 'Redo' },
@@ -49,8 +51,6 @@ const SDR = {
     step: 1,
     format: ms,
 };
-
-// TODO: multiple tabs?
 
 const Body = React.memo(({
     keymap,

@@ -8,7 +8,7 @@ export const TABS = [
 ];
 
 export const Sidebar = (props) => {
-    // TODO: "tab provider" instead of via props
+    // TODO [#3] current tab should probably be made into a context/provider
     let tab = TABS[props.tab];
 
     let underConstruction = null;
