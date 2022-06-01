@@ -3,7 +3,7 @@ import { Textarea } from '../../component/textarea'
 
 const Body = React.memo(({
 }) => {
-    // TODO [#8]
+    // TODO [#5 #6]
     let [fumen, setFumen] = React.useState('');
     return (
         <>

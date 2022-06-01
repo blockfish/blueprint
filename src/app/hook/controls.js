@@ -27,7 +27,7 @@ export function useControls() {
 }
 
 function init() {
-    // TODO [#23] init from localstorage
+    // TODO [#2] init from localstorage
     return {
         keymap: DEFAULT_KEYMAP,
         handling: DEFAULT_HANDLING,

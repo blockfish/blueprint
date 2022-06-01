@@ -79,7 +79,7 @@ class BagRandomizer {
 
     gen() {
         let bag = Array.from(this.bag);
-        // TODO [#32] should replace Math.random() with simple PRNG
+        // TODO [#11] should use a deterministic PRNG instead of Math.random
         let idx = Math.floor(Math.random() * bag.length);
         let [next] = bag.splice(idx, 1);
         return [next, new BagRandomizer(bag)];

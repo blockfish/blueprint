@@ -80,7 +80,7 @@ Edit.TOGGLE_RANDOMIZER = pageEdit({
 
 Edit.MIRROR = pageEdit({
     description: 'mirror playfield',
-    // TODO [#28] mirror piece / queue ?
+    // TODO [#9] mirror the pieces/queue
     apply(page) {
         let mirrored = page.playfield.mirror();
         return page
@@ -106,7 +106,7 @@ Edit.draw = (palette, pos) => pageEdit({
 
 Edit.queue = queue => pageEdit({
     desc: 'change page comment',
-    // TODO [#11] flow for changing the queue
+    // TODO [#10] may need to add a new 'flow' for queue modifications
     apply: page => page.setQueue(queue)
 });
 

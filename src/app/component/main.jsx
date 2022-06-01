@@ -12,12 +12,13 @@ import { useGlobalKeyboard } from '../hook/keyboard'
 import { usePalette } from '../hook/palette'
 
 export const Main = ({}) => {
-    // TODO [#23] init from localstorage?
+    // TODO [#2] init from localstorage?
     let [tab, setTab] = React.useState(0);
     let [palette, dispatchPalette] = usePalette();
 
     let [doc, history, dispatchEditor] = useEditor();
     let page = doc.current;
+    // TODO [#3] eugh -- maybe move all this to index.jsx?
     let editorAction = React.useMemo(() => ({
         undo() { dispatchEditor({ type: 'undo' }); },
         redo() { dispatchEditor({ type: 'redo' }); },
