@@ -20,6 +20,9 @@ will automatically rebuild when changes are detected:
     Compiled src/style/index.scss to .dev/index.css.
     Sass is watching for changes. Press Ctrl-C to stop.
 
+The server most likely hosts on `localhost:8080`. Bear in mind, the dev server is *NOT*
+production ready!
+
 ## Deployment
 
 Blueprint is deployed with nginx running on debian. You can use the
@@ -33,6 +36,7 @@ which can then be used to set up the website.
     dpkg-deb: building package 'blueprint-web' in 'dist/blueprint-web_0.0.1-0_all.deb'.
     + ...
     $ scp ./dist/blueprint-web_0.0.1-0_all.deb talisoftware:
+    $ ssh talisoftware
     talisoftware# apt install ./blueprint-web_0.0.1-0_all.deb
     ... (omitted) ...
     talisoftware# ln -s ../sites-available/blueprint /etc/nginx/sites-enabled
