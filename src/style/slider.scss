@@ -1,0 +1,17 @@
+.slider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    input {
+        flex: 1 0;
+    }
+
+    label {
+        flex: 0 0;
+        flex-basis: 6rem;
+
+        font-size: 0.85em;
+        margin-left: 0.5rem;
+    }
+}

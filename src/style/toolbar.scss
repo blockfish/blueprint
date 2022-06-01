@@ -1,0 +1,25 @@
+section.toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem;
+
+    hr { margin: 0 0.5rem; height: 100%;}
+    .icon-button { font-size: 2.5rem; }
+
+    .button-group {
+        display: flex;
+        flex-basis: 0;
+        & > * { margin-left: 0.25rem; }
+        & > *:first-child { margin-left: 0; }
+    }
+
+    .page-index {
+        // TODO [#17]: figure out some flex box tricks to get this to be centered wrt the
+        // board, i.e. the area from the far left side of the controls bar to the
+        // separator
+        text-align: center;
+        flex-grow: 1;
+    }
+}
+

@@ -1,0 +1,52 @@
+.icon-button {
+    button {
+        font-size: 0.6em;
+        padding: 0.333333em;
+        border: none;
+        display: block;
+        border-radius: 2px;
+        svg { display: block; }
+
+        background-color: rgba(var(--icon), 0.0);
+        fill: rgba(var(--icon), 0.6);
+        cursor: pointer;
+    }
+
+    button[disabled], button[disabled]:hover, button[disabled]:active {
+        background-color: rgba(var(--icon), 0.0);
+        fill: rgba(var(--icon), 0.2);
+        cursor: default;
+    }
+
+    button:hover {
+        background-color: rgba(var(--icon), 0.1);
+        fill: rgba(var(--icon), 0.8);
+    }
+
+    button:active {
+        background-color: rgba(var(--icon), 0.2);
+        fill: rgba(var(--icon), 1.0);
+    }
+
+    &.selected {
+        button[disabled], button[disabled]:hover, button[disabled]:active {
+            background-color: rgba(var(--icon-sel), 0.1);
+            fill: rgba(var(--icon-sel), 0.2);
+        }
+
+        button {
+            background-color: rgba(var(--icon-sel), 0.2);
+            fill: rgba(var(--icon-sel), 1.0);
+        }
+
+        button:hover {
+            background-color: rgba(var(--icon-sel), 0.3);
+            fill: rgba(var(--icon-sel), 1.0);
+        }
+
+        button:active {
+            background-color: rgba(var(--icon-sel), 0.6);
+            fill: rgba(var(--icon-sel), 1.0);
+        }
+    }
+}

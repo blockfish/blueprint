@@ -1,0 +1,46 @@
+<%_
+const DATE = new Date;
+const SCRIPTS = [
+    ["https://unpkg.com/react@18/umd/react.production.min.js", 20],
+    ["https://unpkg.com/react-dom@18/umd/react-dom.production.min.js", 40],
+    ["/bundle.js", 40],
+];
+  _%>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= pkg.name %></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="Root">
+      <main class="container loading fade in" id="Container">
+        <h3><strong><%= pkg.name %></strong> - <%= pkg.author %> <%= DATE.getFullYear() %></h3>
+        <div class="progress"><div id="Bar"></div></div>
+      </main>
+    </div>
+    <footer>
+      <p>
+        Version <%= pkg.version %>
+        <a href="<%- pkg.homepage %>" target="_blank">[source code]</a>
+      </p>
+    </footer>
+    <% let fill = 0;
+       for (let [path, amt] of SCRIPTS) {
+           fill += amt;
+           let attr = path.startsWith("https://") ? ' crossorigin' : '';
+       _%>
+      <script<%- attr %> src="<%- path %>"></script>
+      <script>document.getElementById('Bar').style.width = '<%- fill %>%';</script>
+    <% } _%>
+    <script>
+      setTimeout(function() {
+          var c = document.getElementById('Container').classList;
+          c.remove('in');
+          c.add('out');
+          setTimeout(function() { InitializeApp(document.getElementById('Root')); }, 200);
+      }, 300);
+    </script>
+  </body>
+</html>

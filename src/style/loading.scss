@@ -1,0 +1,30 @@
+main.loading {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 16rem;
+    padding: 1rem;
+
+    h1, h2, h3 {
+        text-align: center;
+    }
+
+    & > * { margin-top: 0.5rem; }
+    & > *:first-child { margin-top: 0; }
+}
+
+.progress {
+    font-size: 0.8rem;
+    width: 28rem;
+    height: 1em;
+    border-radius: 4px;
+    overflow: hidden;
+
+    & > *:first-child {
+        display: inline-block;
+        width: 5%;
+        height: 100%;
+        background-color: rgb(var(--progress));
+        transition: width 0.2s ease-out;
+    }
+}
