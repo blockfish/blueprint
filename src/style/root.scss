@@ -1,0 +1,29 @@
+body > *:first-child { // root
+    display: flex;
+}
+
+main {
+    margin: 1rem auto 0;
+    display: grid;
+}
+
+section.toolbar {
+    grid-column: 1/span 3;
+    grid-row: 1;
+}
+
+section.board {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+section.color-picker {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+section.sidebar {
+    grid-column: 3;
+    grid-row: 2;
+}
+

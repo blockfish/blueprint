@@ -1,0 +1,159 @@
+@use 'sass:color';
+@use './board.scss';
+@use './checkbox.scss';
+@use './color-picker.scss';
+@use './fade.scss';
+@use './icon-button.scss';
+@use './keybindings.scss';
+@use './loading.scss';
+@use './root.scss';
+@use './sidebar.scss';
+@use './slider.scss';
+@use './textarea.scss';
+@use './toolbar.scss';
+
+@mixin theme-variables(
+    $background,
+    $progress,
+    $footer,
+    $surface, $on-surface,
+    $warning, $on-warning,
+    $comment, $on-comment,
+    $tab-editing, $on-tab-editing,
+    $tab-analysis, $on-tab-analysis,
+    $tab-convert, $on-tab-convert,
+    $tab-settings, $on-tab-settings
+) {
+    // https://stackoverflow.com/questions/40010597
+    --th-background: #{torgb($background)};
+    --th-progress: #{torgb($progress)};
+    --th-footer: #{torgb($footer)};
+    --th-surface: #{torgb($surface)};
+    --th-on-surface: #{torgb($on-surface)};
+    --th-warning: #{torgb($warning)};
+    --th-on-warning: #{torgb($on-warning)};
+    --th-comment: #{torgb($comment)};
+    --th-on-comment: #{torgb($on-comment)};
+    --th-tab-editing-primary: #{torgb($tab-editing)};
+    --th-tab-editing-on-primary: #{torgb($on-tab-editing)};
+    --th-tab-analysis-primary: #{torgb($tab-analysis)};
+    --th-tab-analysis-on-primary: #{torgb($on-tab-analysis)};
+    --th-tab-convert-primary: #{torgb($tab-convert)};
+    --th-tab-convert-on-primary: #{torgb($on-tab-convert)};
+    --th-tab-settings-primary: #{torgb($tab-settings)};
+    --th-tab-settings-on-primary: #{torgb($on-tab-settings)};
+}
+
+@function torgb($c) { @return color.red($c),color.green($c),color.blue($c); }
+
+html {
+    font-size: 16px;
+    font-family: "DejaVu Sans Mono", monospace;
+    @include theme-variables(
+        $background: #090d16,
+        $surface: #121928, $on-surface: #ffffff,
+        $warning: #f7c22e, $on-warning: #242424,
+        $comment: #ffffff, $on-comment: #000000,
+        $tab-editing: #356dd6, $on-tab-editing: #ffffff,
+        $tab-analysis: #0fa324, $on-tab-analysis: #ffffff,
+        $tab-convert: #e80f52, $on-tab-convert: #ffffff,
+        $tab-settings: #950fe8, $on-tab-settings: #ffffff,
+        $footer: #0e337a,
+        $progress: #356dd6
+    );
+}
+
+body {
+    margin: 0;
+    background: rgb(var(--th-background));
+}
+
+footer {
+    color: rgb(var(--th-footer));
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: -1;
+}
+
+section, div, h1, h2, h3, h4, p {
+    margin: 0;
+    font-weight: normal;
+}
+
+a[href] {
+    color: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+hr {
+    border-color: rgba(var(--separator), 0.8);
+    border-style: solid;
+    border-width: 1px 1px 0 0;
+}
+
+label {
+    cursor: pointer;
+    color: rgba(var(--label), 0.8);
+    &:hover { color: rgba(var(--label), 1.0); }
+}
+
+.block {
+    background: rgb(var(--primary));
+    color: rgb(var(--on-primary));
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.25em;
+}
+
+h3 {
+    font-size: 1em;
+}
+
+h4 {
+    font-size: 0.85em;
+}
+
+.container {
+    background: rgb(var(--th-surface));
+    color: rgb(var(--th-on-surface));
+    --separator:    var(--th-on-surface);
+    --icon:         var(--th-on-surface);
+    --on-color:     var(--th-on-surface);
+    --label:        var(--th-on-surface);
+    --keybind-dots: var(--th-on-surface);
+    --progress:     var(--th-progress);
+}
+
+@each $tab in "editing", "analysis", "convert", "settings" {
+    .sidebar.#{$tab} {
+        --primary: var(--th-tab-#{$tab}-primary);
+        --on-primary: var(--th-tab-#{$tab}-on-primary);
+    }
+
+    .toolbar .tab-buttons .#{$tab} {
+        --icon-sel: var(--th-tab-#{$tab}-primary);
+    }
+}
+
+.warning {
+    --primary: var(--th-warning);
+    --on-primary: var(--th-on-warning);
+}
+
+.comment {
+    --primary: var(--th-comment);
+    --on-primary: var(--th-on-comment);
+}

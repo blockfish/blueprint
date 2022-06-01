@@ -1,0 +1,12 @@
+section.board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .comment {
+        padding: 0.25em 0.5em;
+        max-width: 400px;
+        text-align: center;
+        word-wrap: break-word;
+    }
+}
