@@ -63,6 +63,11 @@ export class Keymap {
     delete(action) {
         return new Keymap(deleteBinding(this._actToKey, action));
     }
+
+    equals(other) {
+        return subset(this._actToKey, other._actToKey)
+            && subset(other._actToKey, this._actToKey);
+    }
 }
 
 function* addBinding(bindings, action, key) {
@@ -76,4 +81,13 @@ function* deleteBinding(bindings, action) {
             yield pair;
         }
     }
+}
+
+function subset(lhs, rhs) {
+    for (let [k, v] of lhs) {
+        if (rhs.get(k) !== v) {
+            return false;
+        }
+    }
+    return true;
 }

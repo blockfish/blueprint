@@ -6,4 +6,9 @@ export class Palette {
 
     setColor(color) { return new Palette(color, this.fillRow); }
     setFillRow(fillRow) { return new Palette(this.color, fillRow); }
+
+    equals(other) {
+        return this.color === other.color
+            && this.fillRow === other.fillRow;
+    }
 }
