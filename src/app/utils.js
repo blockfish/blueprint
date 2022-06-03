@@ -15,3 +15,9 @@ export function cancelBubble(ev) {
         ev.stopPropagation();
     }
 }
+
+export class NotImplementedError extends Error {
+    constructor() {
+        super('not implemented');
+    }
+}

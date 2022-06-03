@@ -1,4 +1,5 @@
 import rules from '../../data/rules'
+import { NotImplementedError } from '../utils'
 
 export class Piece {
     constructor(type, x, y, rotation) {
@@ -124,7 +125,7 @@ export class Move {
 
     /* virtual */
     _rotate(piece) { return piece; }
-    _getOffsets(piece) { throw new Error('._getOffsets() not implemented!'); }
+    _getOffsets(piece) { throw new NotImplementedError(); }
 }
 
 class ShiftMove extends Move {
