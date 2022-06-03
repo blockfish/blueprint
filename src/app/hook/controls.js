@@ -19,7 +19,7 @@ const DEFAULT_KEYMAP = new Keymap(function*() {
     yield ['toggle', Key.get('Enter')];
 }());
 
-const DEFAULT_HANDLING = new Handling(150, 0, 20);
+const DEFAULT_HANDLING = new Handling(183, 16, 16);
 
 export function useControls(db) {
     let [{ keymap, handling }, dispatch] = React.useReducer(reduce, db, init);
