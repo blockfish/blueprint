@@ -27,6 +27,14 @@ export class Queue {
         return new Queue(type + this.previews, this.hold, this.randomizer);
     }
 
+    pushBack(type) {
+        return new Queue(this.previews + type, this.hold, this.randomizer);
+    }
+
+    setHold(type) {
+        return new Queue(this.previews, type, this.randomizer);
+    }
+
     popFront() {
         let hold = this.hold;
         let front = this.previews[0] || null;
