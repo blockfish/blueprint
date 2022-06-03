@@ -1,12 +1,13 @@
 import { Palette } from '../model/palette'
 
-export function usePalette() {
-    return React.useReducer(reduce, null, init);
+export function usePalette(db) {
+    let [palette, dispatchPalette] = React.useReducer(reduce, db, init);
+    React.useEffect(() => db.store('palette', palette), [db, palette]);
+    return [palette, dispatchPalette];
 }
 
-function init() {
-    // TODO [#2] init from localstorage
-    return new Palette('g', true);
+function init(db) {
+    return db.load('palette') || new Palette('g', true);
 }
 
 function reduce(palette, action) {

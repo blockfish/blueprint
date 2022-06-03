@@ -21,16 +21,17 @@ const DEFAULT_KEYMAP = new Keymap(function*() {
 
 const DEFAULT_HANDLING = new Handling(150, 0, 20);
 
-export function useControls() {
-    let [state, dispatch] = React.useReducer(reduce, null, init);
-    return [state.keymap, state.handling, dispatch];
+export function useControls(db) {
+    let [{ keymap, handling }, dispatch] = React.useReducer(reduce, db, init);
+    React.useEffect(() => db.store('keymap', keymap), [db, keymap]);
+    React.useEffect(() => db.store('handling', handling), [db, handling]);
+    return [keymap, handling, dispatch];
 }
 
-function init() {
-    // TODO [#2] init from localstorage
+function init(db) {
     return {
-        keymap: DEFAULT_KEYMAP,
-        handling: DEFAULT_HANDLING,
+        keymap: db.load('keymap') || DEFAULT_KEYMAP,
+        handling: db.load('handling') || DEFAULT_HANDLING,
     };
 }
 

@@ -9,12 +9,16 @@ import { useControls } from '../hook/controls'
 import { useEditor } from '../hook/editor'
 import { useFadeIn } from '../hook/fade'
 import { useGlobalKeyboard } from '../hook/keyboard'
+import { useLocalStorageDatabase } from '../hook/storage'
 import { usePalette } from '../hook/palette'
+import { useTab } from '../hook/tab'
 
 export const Main = ({}) => {
-    // TODO [#2] init from localstorage?
-    let [tab, setTab] = React.useState(0);
-    let [palette, dispatchPalette] = usePalette();
+    let storageDB = useLocalStorageDatabase();
+
+    let [tab, setTab] = useTab(storageDB);
+    let [keymap, handling, dispatchControls] = useControls(storageDB);
+    let [palette, dispatchPalette] = usePalette(storageDB);
 
     let [doc, history, dispatchEditor] = useEditor();
     let page = doc.current;
@@ -33,7 +37,6 @@ export const Main = ({}) => {
         lock() { dispatchEditor({ type: 'apply', payload: Edit.LOCK_PIECE }); },
     }) , [dispatchEditor]);
 
-    let [keymap, handling, dispatchControls] = useControls();
     let autoShift = useAutorepeat(handling.das, handling.arr, editorAction.movePiece);
     let softDrop = useAutorepeat(0, handling.sdr, editorAction.movePiece);
 
