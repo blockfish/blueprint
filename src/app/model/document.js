@@ -11,20 +11,14 @@ export class Document {
 
     get count() { return this.pages.length; }
 
-    unzip(index) {
-        if (index < 0 || index >= this.pages.length) {
-            throw new Error(`Index out of bounds: ${index}`);
+    unzip() {
+        // build linked list from array
+        let head = { page: this.pages[0], next: null }, tail = head;
+        for (let i = 1; i < this.pages.length; i++) {
+            tail.next = { page: this.pages[i], next: null };
+            tail = tail.next;
         }
-        let current = this.pages[index];
-        let prevs = null;
-        for (let i = 0; i < index; i++) {
-            prevs = { page: this.pages[i], prev: prevs };
-        }
-        let nexts = null;
-        for (let i = this.pages.length - 1; i > index; i--) {
-            nexts = { page: this.pages[i], next: nexts };
-        }
-        return new Zipper(index, this.count, current, prevs, nexts);
+        return new Zipper(0, this.count, head.page, null, head.next);
     }
 }
 
@@ -136,5 +130,5 @@ Document.init = () => {
     let initialPage = Page.EMPTY
         .setQueue(Queue.EMPTY.setRandomizer(Queue.BAG_RANDOMIZER))
         .spawnPiece();
-    return new Document([ initialPage ]).unzip(0);
+    return new Document([ initialPage ]).unzip();
 };
