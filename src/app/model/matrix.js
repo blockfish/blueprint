@@ -77,17 +77,16 @@ export class Matrix {
     }
 
     clearFullRows() {
-        return Matrix.EMPTY.setCells(
-            removeRows(this.getNonEmptyCells(), this.getFullRows())
-        );
+        return Matrix.fromCells(removeRows(this.getNonEmptyCells(), this.getFullRows()));
     }
 
     mirror() {
-        return Matrix.EMPTY.setCells(mirrorCells(this.getNonEmptyCells()));
+        return Matrix.fromCells(mirrorCells(this.getNonEmptyCells()));
     }
 }
 
 Matrix.EMPTY = new Matrix(new Uint8Array(ROWS * COLS));
+Matrix.fromCells = cells => Matrix.EMPTY.setCells(cells);
 
 export class InvalidCellTypeError extends Error {
     constructor(type) {
