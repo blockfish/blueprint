@@ -1,10 +1,10 @@
 section.sidebar {
     margin-top: 1rem;
 
-    &.editing { width: 16rem; }
-    &.analysis { width: 16rem; }
-    &.convert { width: 16rem; }
-    &.settings { width: 18rem; }
+    &.editing { min-width: 16rem; }
+    &.analysis { min-width: 16rem; }
+    &.convert { min-width: 16rem; }
+    &.settings { min-width: 18rem; }
 
     .block {
         padding: 0.25em;
