@@ -91,6 +91,9 @@ a[href] {
 .row {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    * { margin-left: 0.5em; }
+    *:first-child { margin-left: 0; }
 }
 
 hr {
@@ -123,7 +126,7 @@ h3 {
 }
 
 h4 {
-    font-size: 0.85em;
+    font-size: 0.75em;
 }
 
 .container {
