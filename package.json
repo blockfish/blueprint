@@ -1,6 +1,6 @@
 {
   "name": "Blueprint",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A modern new tetris board-editing tool for practicing, sharing setups, analyzing situations, and more.",
   "main": "src/app/index.jsx",
   "author": "iitalics",
