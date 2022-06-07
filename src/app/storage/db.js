@@ -1,7 +1,7 @@
 import * as V1 from './v1'
 
-const VER_KEY = 'bp::ver';
-const V1_USER_KEY = 'bp::v1::user';
+const VER_KEY = 'bp.ver';
+const V1_USER_KEY = 'bp.v1.user';
 
 export class Database {
     constructor() {
