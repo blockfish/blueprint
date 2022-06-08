@@ -52,7 +52,11 @@ export class Piece {
     }
 
     unstuck(matrix) {
-        return Move.UNSTUCK.apply(this, matrix) || this;
+        let offs = { dx: 0, dy: 0 };
+        while (this.offsetIntersects(matrix, offs)) {
+            offs.dy++;
+        }
+        return this.offsetBy(offs);
     }
 }
 
@@ -140,9 +144,9 @@ class ShiftMove extends Move {
 }
 
 class ShiftRepeatMove extends Move {
-    constructor(dx, dy, pickLast) {
+    constructor(dx, dy) {
         super();
-        this.pickLastValidOffset = pickLast;
+        this.pickLastValidOffset = true;
         this._dx = dx;
         this._dy = dy;
     }
@@ -150,9 +154,9 @@ class ShiftRepeatMove extends Move {
     *_getOffsets(_piece) {
         let dx = 0, dy = 0;
         while (true) {
-            yield { dx, dy };
             dx += this._dx;
             dy += this._dy;
+            yield { dx, dy };
         }
     }
 }
@@ -199,8 +203,6 @@ Move.RIGHT = new ShiftMove(+1, 0);
 Move.DROP = new ShiftMove(0, -1);
 Move.CCW = new RotateMove(-1);
 Move.CW = new RotateMove(+1);
-
-Move.SONIC_DROP = new ShiftRepeatMove(0, -1, true);
-Move.UNSTUCK = new ShiftRepeatMove(0, +1, false);
-Move.INF_LEFT = new ShiftRepeatMove(-1, 0, true);
-Move.INF_RIGHT = new ShiftRepeatMove(+1, 0, true);
+Move.SONIC_DROP = new ShiftRepeatMove(0, -1);
+Move.INF_LEFT = new ShiftRepeatMove(-1, 0);
+Move.INF_RIGHT = new ShiftRepeatMove(+1, 0);
