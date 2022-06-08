@@ -4,13 +4,13 @@ import { Board } from '../component/board'
 import { ColorPicker } from '../component/color-picker'
 import { Sidebar } from '../component/sidebar'
 import { Toolbar } from '../component/toolbar'
-import { useAutorepeat } from '../hook/autorepeat'
 import { useControls } from '../hook/controls'
 import { useEditor } from '../hook/editor'
 import { useFadeIn } from '../hook/fade'
 import { useGlobalKeyboard } from '../hook/keyboard'
 import { useLocalStorageDatabase } from '../hook/storage'
 import { usePalette } from '../hook/palette'
+import { useStacker } from '../hook/stacker'
 import { useTab } from '../hook/tab'
 
 export const Main = ({}) => {
@@ -19,26 +19,22 @@ export const Main = ({}) => {
     let [tab, setTab] = useTab(storageDB);
     let [keymap, handling, dispatchControls] = useControls(storageDB);
     let [palette, setPalette] = usePalette(storageDB);
-
     let [doc, history, dispatchEditor] = useEditor();
-    let page = doc.current;
+
     // TODO [#3] eugh -- maybe move all this to index.jsx?
     let action = React.useMemo(() => ({
         undo() { dispatchEditor({ type: 'undo' }); },
         redo() { dispatchEditor({ type: 'redo' }); },
         nextPage() { dispatchEditor({ type: 'next' }); },
         prevPage() { dispatchEditor({ type: 'prev' }); },
+        applyEdit(e) { dispatchEditor({ type: 'apply', payload: e }); }
         reset() { dispatchEditor({ type: 'apply', payload: Edit.RESET }); },
         newPage() { dispatchEditor({ type: 'apply', payload: Edit.CREATE_PAGE }); },
         delPage() { dispatchEditor({ type: 'apply', payload: Edit.DELETE_PAGE }); },
-        movePiece(m) { dispatchEditor({ type: 'apply', payload: Edit.movePiece(m) }); },
         togglePiece() { dispatchEditor({ type: 'apply', payload: Edit.TOGGLE_PIECE }); },
-        hold() { dispatchEditor({ type: 'apply', payload: Edit.HOLD }); },
-        lock() { dispatchEditor({ type: 'apply', payload: Edit.LOCK_PIECE }); },
     }) , [dispatchEditor]);
 
-    let autoShift = useAutorepeat(handling.das, handling.arr, action.movePiece);
-    let softDrop = useAutorepeat(0, handling.sdr, action.movePiece);
+    let dispatchStacker = useStacker(handling, doc.current, action.applyEdit);
 
     useGlobalKeyboard(keymap, action => {
         switch (action) {
@@ -56,37 +52,13 @@ export const Main = ({}) => {
         case 'del-page': action.delPage(); break;
         case 'toggle': action.togglePiece(); break;
 
-        case 'hold': action.hold(); break;
-        case 'lock': action.lock(); break;
-        case 'ccw': action.movePiece(Move.CCW); break;
-        case 'cw': action.movePiece(Move.CW); break;
-
-        case 'drop':
-            softDrop.charge(Move.DROP, Move.SONIC_DROP);
-            break;
-        case 'drop:up':
-            softDrop.release(Move.DROP);
-            break;
-
-        case 'left':
-            action.movePiece(Move.LEFT);
-            autoShift.charge(Move.LEFT, Move.INF_LEFT);
-            break;
-        case 'left:up':
-            autoShift.release(Move.LEFT);
-            break;
-
-        case 'right':
-            action.movePiece(Move.RIGHT);
-            autoShift.charge(Move.RIGHT, Move.INF_RIGHT);
-            break;
-        case 'right:up':
-            autoShift.release(Move.RIGHT);
-            break;
+        default: dispatchStacker(action); break;
         }
     });
 
     let fadeInCls = useFadeIn();
+
+    let page = doc.current;
 
     return (
         <main className={fadeInCls}>
