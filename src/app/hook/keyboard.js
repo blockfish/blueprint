@@ -18,8 +18,17 @@ export function useGlobalKeyboard(_keymap, _callback) {
                 return;
             }
 
+            let [keymap, callback] = dispatchRef.current;
+            let action = keymap.getAction(key);
+            if (action === null) {
+                return;
+            }
+
+            keyEv.preventDefault();
+
             if (up) {
                 trackRepeats.delete(key);
+                action += ':up';
             } else {
                 if (trackRepeats.has(key)) {
                     return;
@@ -27,12 +36,7 @@ export function useGlobalKeyboard(_keymap, _callback) {
                 trackRepeats.add(key);
             }
 
-            let [keymap, callback] = dispatchRef.current;
-            let action = keymap.getAction(key);
-            if (action !== null) {
-                callback(up ? `${action}:up` : action);
-                keyEv.preventDefault();
-            }
+            callback(action);
         }
 
         document.body.addEventListener('keydown', onKey);
