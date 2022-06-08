@@ -47,6 +47,7 @@ install -m 644 "${tmpdir}/app.js" "${www}/bundle.js"
 install -m 644 "${tmpdir}/style.css" "${www}/style.css"
 install -m 644 "${tmpdir}/index.html" "${www}/index.html"
 install -m 644 "resources/icon/16x16.ico" "${www}/favicon.ico"
+install -m 644 "resources/icon/160x160.png" "${www}/icon-md.png"
 install -m 644 "src/nginx.conf" "${root}/etc/nginx/sites-available/blueprint"
 
 ctl="${root}/DEBIAN/control"
