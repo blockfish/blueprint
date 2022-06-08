@@ -5,10 +5,10 @@ import { QueueEntry } from '../../component/queue-entry'
 import { Textarea } from '../../component/textarea'
 
 const Body = React.memo(({
+    dispatchEditor,
     page,
     palette,
-    dispatchEditor,
-    dispatchPalette,
+    setPalette,
 }) => {
     let action = React.useMemo(() => ({
         setQueue(q) { dispatchEditor({ type: 'apply', payload: Edit.queue(q) }); },
@@ -18,9 +18,8 @@ const Body = React.memo(({
         endComment() { dispatchEditor({ type: 'end', payload: Flow.Comment }); },
         mirror() { dispatchEditor({ type: 'apply', payload: Edit.MIRROR }); },
         clear() { dispatchEditor({ type: 'apply', payload: Edit.CLEAR }); },
-        // setColor(c) { dispatchPalette(p => p.setColor(c)); },
-        toggleFillRow() { dispatchPalette(p => p.setFillRow(!p.fillRow)); },
-    }), [dispatchEditor]);
+        toggleFillRow() { setPalette(p => p.setFillRow(!p.fillRow)); },
+    }), [dispatchEditor, setPalette]);
 
     let togglePiece = (page.piece || !page.queue.isEmpty) ? action.togglePiece : null;
     let hasRandomizer = !!page.queue.randomizer;

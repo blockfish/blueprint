@@ -18,7 +18,7 @@ export const Main = ({}) => {
 
     let [tab, setTab] = useTab(storageDB);
     let [keymap, handling, dispatchControls] = useControls(storageDB);
-    let [palette, dispatchPalette] = usePalette(storageDB);
+    let [palette, setPalette] = usePalette(storageDB);
 
     let [doc, history, dispatchEditor] = useEditor();
     let page = doc.current;
@@ -100,12 +100,12 @@ export const Main = ({}) => {
                 setTab={setTab}
                 tab={tab} />
             <ColorPicker
-                dispatchPalette={dispatchPalette}
+                setPalette={setPalette}
                 palette={palette} />
             <Sidebar
                 dispatchControls={dispatchControls}
                 dispatchEditor={dispatchEditor}
-                dispatchPalette={dispatchPalette}
+                setPalette={setPalette}
                 page={page}
                 handling={handling}
                 keymap={keymap}
