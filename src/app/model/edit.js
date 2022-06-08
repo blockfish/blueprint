@@ -167,14 +167,12 @@ Edit.LOCK_PIECE = {
             return doc;
         }
         let piece = page.piece.sonicDrop(page.playfield);
-        return doc.setCurrent(page.setPiece(piece)).insert(
-            page
-                .setPlayfield(
-                    page.playfield
-                        .setCells(piece.getCells())
-                        .clearFullRows()
-                )
-                .spawnPiece()
-        );
+        return doc
+            .setCurrent(page.setPiece(piece))
+            .insert(
+                page
+                    .setPlayfield(page.playfield.lock(piece))
+                    .spawnPiece()
+            );
     },
 };

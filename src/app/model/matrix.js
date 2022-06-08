@@ -83,6 +83,10 @@ export class Matrix {
     mirror() {
         return Matrix.fromCells(mirrorCells(this.getNonEmptyCells()));
     }
+
+    lock(piece) {
+        return this.setCells(piece.getCells()).clearFullRows();
+    }
 }
 
 Matrix.EMPTY = new Matrix(new Uint8Array(ROWS * COLS));
