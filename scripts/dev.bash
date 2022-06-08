@@ -28,7 +28,7 @@ fi
 if ! test -d .dev/public; then
     mkdir -p .dev/public
     ln -s ../../src/index.dev.html .dev/public/index.html
-    ln -s ../../resources/icon/favicon-16x16.ico .dev/public/favicon.ico
+    ln -s ../../resources/icon/16x16.ico .dev/public/favicon.ico
     ln -s ../index.css .dev/public/style.css
     ln -s ../app.js .dev/public/bundle.js
     wget -P .dev/public 'https://unpkg.com/react@18/umd/react.development.js' || exit 1
