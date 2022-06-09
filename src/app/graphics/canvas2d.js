@@ -79,14 +79,14 @@ export class Renderer {
 
         paths.cell.color.alpha = 1.0;
         for (let cell of playfield.getNonEmptyCells()) {
-            paths.cell.color.fill = skin.block[cell.type];
+            paths.cell.color.fill = skin.block[cell.type][0];
             geometry.getCellTransform(cell, paths.cell.transform);
             draw(paths.cell);
         }
 
         if (ghost) {
             paths.cell.color.alpha = 0.3;
-            paths.cell.color.fill = skin.block[ghost.type];
+            paths.cell.color.fill = skin.block[ghost.type][0];
             for (let cell of ghost.getCells()) {
                 geometry.getCellTransform(cell, paths.cell.transform);
                 draw(paths.cell);
@@ -95,7 +95,7 @@ export class Renderer {
 
         if (piece) {
             paths.cell.color.alpha = 1.0;
-            paths.cell.color.fill = skin.block[piece.type];
+            paths.cell.color.fill = skin.block[piece.type][0];
             for (let cell of piece.getCells()) {
                 geometry.getCellTransform(cell, paths.cell.transform);
                 draw(paths.cell);
@@ -103,14 +103,14 @@ export class Renderer {
         }
 
         if (queue.hold) {
-            paths.mini.color.fill = skin.block[queue.hold];
+            paths.mini.color.fill = skin.block[queue.hold][0];
             for (let t of geometry.getHoldCellTransform(queue.hold, paths.mini.transform)) {
                 draw(paths.mini);
             }
         }
         for (let i = 0; i < queue.previews.length; i++) {
             let type = queue.previews[i];
-            paths.mini.color.fill = skin.block[type];
+            paths.mini.color.fill = skin.block[type][0];
             for (let t of geometry.getPreviewCellTransforms(type, i, paths.mini.transform)) {
                 draw(paths.mini);
             }

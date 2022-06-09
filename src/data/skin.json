@@ -1,23 +1,22 @@
 {
   "block": {
-    "Z": "#cf202e",
-    "L": "#f78822",
-    "O": "#f6db35",
-    "S": "#6dc067",
-    "J": "#3c5aaa",
-    "I": "#41aabe",
-    "T": "#8f499c",
-    "g": "#686868",
-    "u": "#343434"
+    "Z": ["#cf202e", "#fc2d3e", "#ae101d"],
+    "L": ["#f78822", "#ffa14b", "#e06b00"],
+    "O": ["#f6db35", "#ffe859", "#eecd00"],
+    "S": ["#6dc067", "#82d97c", "#46ad3e"],
+    "J": ["#3c5aaa", "#4b71d6", "#2a458d"],
+    "I": ["#41aabe", "#5ac7dc", "#2d8c9e"],
+    "T": ["#8f499c", "#b55bc5", "#753681"],
+    "g": ["#686868", "#888888", "#535353"]
   },
   "grid": {
     "back": { "fill": "#000000", "alpha": 0.4 },
-    "lines": { "fill": "#ffffff", "alpha": 0.2 },
+    "lines": { "fill": "#ffffff", "alpha": 0.15 },
     "border": { "fill": "#ffffff", "alpha": 1.0 }
   },
   "cursor": {
     "up": { "fill": "#ffffff", "alpha": 0.4 },
     "down": { "fill": "#ffffff", "alpha": 0.7 }
-  }
+  },
+  "ghost": { "alpha": 0.8 }
 }
-
