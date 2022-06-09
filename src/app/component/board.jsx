@@ -1,4 +1,4 @@
-import { BoardRenderer } from '../renderer'
+import { BoardGraphics } from '../graphics'
 import { Edit, Flow } from '../model/edit'
 
 export const Board = ({
@@ -23,30 +23,27 @@ export const Board = ({
     );
 };
 
-const BoardCanvas = React.memo(({
+const BoardCanvas = ({
     playfield,
     queue,
     piece,
     onDrag,
     onDragEnd,
 }) => {
-    let playfieldRendererRef = React.useRef(null);
-    let playfieldRenderer = (playfieldRendererRef.current ||= new BoardRenderer());
-    playfieldRenderer.onDragStart = onDrag;
-    playfieldRenderer.onDrag = onDrag;
-    playfieldRenderer.onDragEnd = onDragEnd;
+    let boardRef = React.useRef(null);
+    let board = (boardRef.current ||= new BoardGraphics());
 
-    let onCanvasElement = React.useCallback(canvas => {
-        playfieldRenderer.setCanvas(canvas);
-    }, [playfieldRenderer]);
+    board.onDragStart = onDrag;
+    board.onDrag = onDrag;
+    board.onDragEnd = onDragEnd;
 
-    playfieldRenderer.setMatrix(playfield);
-    playfieldRenderer.setHold(queue.hold);
-    playfieldRenderer.setPreviews(queue.previews);
-    playfieldRenderer.setPiece(piece);
+    React.useEffect(() => board.setQueue(queue), [board, queue]);
+    React.useEffect(() => board.setPlayfield(playfield), [board, playfield]);
+    React.useEffect(() => board.setPiece(piece), [board, piece]);
 
-    return (<canvas ref={onCanvasElement} />);
-});
+    let bind = React.useCallback(c => board.setCanvas(c), [board]);
+    return (<canvas ref={bind} />);
+};
 
 const BoardComment = React.memo(({
     children: text,

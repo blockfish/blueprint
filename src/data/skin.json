@@ -1,26 +1,22 @@
 {
   "block": {
-    "Z": { "fill": "#cf202e" },
-    "L": { "fill": "#f78822" },
-    "O": { "fill": "#f6db35" },
-    "S": { "fill": "#6dc067" },
-    "J": { "fill": "#3c5aaa" },
-    "I": { "fill": "#41aabe" },
-    "T": { "fill": "#8f499c" },
-    "g": { "fill": "#686868" },
-    "u": { "fill": "#343434" }
+    "Z": ["#cf202e", "#fc2d3e", "#ae101d"],
+    "L": ["#f78822", "#ffa14b", "#e06b00"],
+    "O": ["#f6db35", "#ffe859", "#eecd00"],
+    "S": ["#6dc067", "#82d97c", "#46ad3e"],
+    "J": ["#3c5aaa", "#4b71d6", "#2a458d"],
+    "I": ["#41aabe", "#5ac7dc", "#2d8c9e"],
+    "T": ["#8f499c", "#b55bc5", "#753681"],
+    "g": ["#686868", "#888888", "#535353"]
   },
   "grid": {
     "back": { "fill": "#000000", "alpha": 0.4 },
-    "outline": { "fill": "#ffffff", "alpha": 0.2 }
-  },
-  "hud": {
-    "back": { "fill": "#000000", "alpha": 1.0 },
-    "outline": { "fill": "#ffffff", "alpha": 1.0 }
+    "lines": { "fill": "#ffffff", "alpha": 0.15 },
+    "border": { "fill": "#ffffff", "alpha": 1.0 }
   },
   "cursor": {
     "up": { "fill": "#ffffff", "alpha": 0.4 },
     "down": { "fill": "#ffffff", "alpha": 0.7 }
-  }
+  },
+  "ghost": { "alpha": 0.8 }
 }
-

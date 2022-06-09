@@ -12,7 +12,7 @@ export const ColorPicker = React.memo(({
             <button
                 key={color}
                 className={color === palette.color ? 'selected' : null}
-                style={{ backgroundColor: skin.block[color].fill }}
+                style={{ backgroundColor: skin.block[color][0] }}
                 onClick={() => setPalette(p => p.setColor(color))} />
         ))}
     </section>
