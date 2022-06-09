@@ -50,7 +50,7 @@ export class Renderer {
         };
     }
 
-    draw(playfield, piece, ghost, queue, cursor) {
+    draw(playfield, previews, hold, piece, ghost, cursor) {
         let { graphics, geometry, paths } = this;
 
         function draw({ transform, color, path }) {
@@ -120,14 +120,14 @@ export class Renderer {
 
         for (let layer = 0; layer < paths.queueCell.length; layer++) {
             let path = paths.queueCell[layer];
-            if (queue.hold) {
-                path.color.fill = skin.block[queue.hold][layer];
-                for (let t of geometry.getHoldCellTransform(queue.hold, path.transform)) {
+            if (hold !== null) {
+                path.color.fill = skin.block[hold][layer];
+                for (let t of geometry.getHoldCellTransform(hold, path.transform)) {
                     draw(path);
                 }
             }
-            for (let i = 0; i < queue.previews.length; i++) {
-                let type = queue.previews[i];
+            for (let i = 0; i < previews.length; i++) {
+                let type = previews[i];
                 path.color.fill = skin.block[type][layer];
                 for (let t of geometry.getPreviewCellTransforms(type, i, path.transform)) {
                     draw(path);

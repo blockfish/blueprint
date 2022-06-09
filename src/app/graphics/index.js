@@ -10,7 +10,8 @@ export class BoardGraphics {
         this.onDrag = undefined;
 
         this._playfield = Matrix.EMPTY;
-        this._queue = Queue.EMPTY;
+        this._previews = '';
+        this._hold = null;
         this._piece = null;
         this._ghost = null;
         this._cursor = { pos: null, down: false };
@@ -25,7 +26,8 @@ export class BoardGraphics {
     }
 
     setQueue(queue) {
-        this._queue = queue;
+        this._previews = queue.previews.substring(0, 9);
+        this._hold = queue.hold;
         this.repaint();
     }
 
@@ -128,9 +130,10 @@ export class BoardGraphics {
         if (this._renderer && this._canvas) {
             this._renderer.draw(
                 this._playfield,
+                this._previews,
+                this._hold,
                 this._piece,
                 this._ghost ||= this._piece?.sonicDrop(this._playfield),
-                this._queue,
                 this._cursor.pos && this._cursor,
             );
 
