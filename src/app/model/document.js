@@ -126,9 +126,9 @@ class Zipper {
 
 Document.Zipper = Zipper;
 
-Document.init = () => {
-    let initialPage = Page.EMPTY
+Document.init = () => new Document([
+    Page.EMPTY
         .setQueue(Queue.EMPTY.setRandomizer(Queue.BAG_RANDOMIZER))
-        .spawnPiece();
-    return new Document([ initialPage ]).unzip();
-};
+        .spawnPiece()
+]);
+

@@ -53,7 +53,7 @@ Edit.importDoc = newDoc => ({
 
 Edit.RESET = {
     description: 'reset all',
-    apply: _doc => Document.init()
+    apply: _doc => Document.init().unzip(),
 };
 
 Edit.CREATE_PAGE = {
