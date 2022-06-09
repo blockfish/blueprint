@@ -46,6 +46,11 @@ function pageEdit(edit) {
     };
 }
 
+Edit.importDoc = newDoc => ({
+    description: 'import from code',
+    apply: _doc => newDoc
+});
+
 Edit.RESET = {
     description: 'reset all',
     apply: _doc => Document.init()
