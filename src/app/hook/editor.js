@@ -2,15 +2,14 @@ import { Document } from '../model/document'
 import { Page } from '../model/page'
 import { History } from '../model/history'
 
-export function useEditor() {
-    let [state, dispatch] = React.useReducer(reduce, null, init);
+export function useEditor(initialDoc) {
+    let [state, dispatch] = React.useReducer(reduce, initialDoc, init);
     return [state.doc, state.history, dispatch];
 }
 
-function init() {
-    // TODO [#2] init from localstorage
+function init(initialDoc) {
     return {
-        doc: Document.init(),
+        doc: (initialDoc || Document.init()).unzip(),
         history: History.EMPTY,
         flow: null,
     };
