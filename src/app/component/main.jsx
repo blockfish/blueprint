@@ -11,14 +11,16 @@ import { useLocalStorageDatabase } from '../hook/storage'
 import { usePalette } from '../hook/palette'
 import { useStacker } from '../hook/stacker'
 import { useTab } from '../hook/tab'
+import { useDocumentFromURL } from '../hook/url'
 
 export const Main = ({}) => {
     let storageDB = useLocalStorageDatabase();
+    let initialDoc = useDocumentFromURL();
 
     let [tab, setTab] = useTab(storageDB);
     let [keymap, handling, dispatchControls] = useControls(storageDB);
     let [palette, setPalette] = usePalette(storageDB);
-    let [doc, history, dispatchEditor] = useEditor();
+    let [doc, history, dispatchEditor] = useEditor(initialDoc);
 
     // TODO [#3] eugh -- maybe move all this to index.jsx?
     let action = React.useMemo(() => ({
