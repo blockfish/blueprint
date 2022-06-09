@@ -1,6 +1,6 @@
 import { Matrix, fillRowCells } from '../model/matrix'
 import { Document } from '../model/document'
-import { Piece, Move } from '../model/piece'
+import { Piece } from '../model/piece'
 import { Queue } from '../model/queue'
 
 export let Flow = {};
