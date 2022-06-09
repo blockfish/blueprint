@@ -25,6 +25,12 @@ export class Piece {
         return new Piece(this.type, this.x + dx, this.y + dy, this.rotation.rotate(dr));
     }
 
+    *getKicks(dr) {
+        for (let [dx, dy] of this.rotation.getKicks(this.type, dr)) {
+            yield { dx, dy, dr };
+        }
+    }
+
     getCells() {
         return (this._cellsMemo ||= getPieceCells(this.type, this.rotation, this.x, this.y));
     }
@@ -73,6 +79,16 @@ export class Rotation {
             r = r.cw;
         }
         return r;
+    }
+
+    getKicks(pieceType, dr) {
+        let { cw, ccw } = rules.kicks[pieceType][this.name];
+        switch (dr & 3) {
+        case 0: return [];
+        case 1: return cw;
+        case 2: throw new NotImplementedError();
+        case 3: return ccw;
+        }
     }
 }
 
@@ -151,33 +167,10 @@ class RotateMove extends Move {
     constructor(dr) {
         super(false);
         this._dr = dr;
-        // precompute a nested mapping piecetype => rotation => applied kick test offsets
-        this._kicks = new Map();
-        // rules.kicks is like {"LJSTZ": ..., "O": ...}, ie. each object key contains a
-        // string listing the piece types it applies to.
-        for (let types of Object.keys(rules.kicks)) {
-            let table = rules.kicks[types];
-            let kicks = new Map();
-            for (let r0 = 0; r0 < 4; r0++) {
-                let r1 = (r0 + dr) & 3;
-                // SRS bullshit; dx,dy = pointwise table[r0] - table[r1]
-                let offsets = table[r0].map(([x0, y0], i) => {
-                    let [x1, y1] = table[r1][i];
-                    let dx = x0 - x1;
-                    let dy = y0 - y1;
-                    return { dx, dy, dr };
-                });
-                kicks.set(Rotation.fromIndex(r0), offsets);
-            }
-            // fortunately, js strings are like lists: "SZT" ~ ["S","Z","T"]
-            for (let type of types) {
-                this._kicks.set(type, kicks);
-            }
-        }
     }
 
     _getOffsets(piece) {
-        return this._kicks.get(piece.type).get(piece.rotation);
+        return piece.getKicks(this._dr);
     }
 }
 
