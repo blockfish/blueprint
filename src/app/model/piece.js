@@ -82,11 +82,11 @@ export class Rotation {
     }
 
     getKicks(pieceType, dr) {
-        let { cw, ccw } = rules.kicks[pieceType][this.name];
+        let { cw, ccw, flip } = rules.kicks[pieceType][this.name];
         switch (dr & 3) {
         case 0: return [];
         case 1: return cw;
-        case 2: throw new NotImplementedError();
+        case 2: return flip;
         case 3: return ccw;
         }
     }
@@ -179,6 +179,7 @@ Move.RIGHT = new ShiftMove(+1, 0);
 Move.DROP = new ShiftMove(0, -1);
 Move.CCW = new RotateMove(-1);
 Move.CW = new RotateMove(+1);
+Move.FLIP = new RotateMove(+2);
 Move.SONIC_DROP = new ShiftRepeatMove(0, -1);
 Move.INF_LEFT = new ShiftRepeatMove(-1, 0);
 Move.INF_RIGHT = new ShiftRepeatMove(+1, 0);
