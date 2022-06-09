@@ -17,13 +17,6 @@ const QUEUE_SPACING = 20;
 
 export class Geometry {
     constructor() {
-        this.cell = { x: 0, y: 0 };
-        this.cell.width = this.cell.height = CELL;
-        this.cell.path = Array.from(rectFillPath(this.cell));
-
-        this.mini = { x: 0, y: 0 };
-        this.mini.width = this.mini.height = MINI_CELL;
-        this.mini.path = Array.from(rectFillPath(this.mini));
 
         this.hold = {};
         this.hold.x = H_MARGIN + QUEUE_PIECE_COLS * MINI_CELL / 2;
@@ -45,14 +38,23 @@ export class Geometry {
         this.previews.right = this.previews.x + QUEUE_PIECE_COLS * MINI_CELL / 2;
 
         this.grid = {
-            back: { path: Array.from(rectFillPath(this.playfield)) },
+            back: { path: Array.from(gridBackPath(this.playfield, CELL)) },
             lines: { path: Array.from(gridLinesPath(this.playfield, 1, CELL)) },
             border: { path: Array.from(rectOuterCupPath(this.playfield, 2)) },
         };
 
+        this.cell = { paths: [
+            Array.from(blockSkinPathL0(CELL)),
+            Array.from(blockSkinPathL1(CELL)),
+            Array.from(blockSkinPathL2(CELL)),
+        ] };
+        this.pieceCell = { paths: [ Array.from(blockSkinPathL0(CELL)) ] };
+        this.ghostCell = { paths: [ Array.from(ghostSkinPath(CELL)) ] };
+        this.queueCell = { paths: [ Array.from(blockSkinPathL0(MINI_CELL)) ] };
+
         this.cursor = {
-            up: { path: Array.from(rectInnerOutlinePath(this.cell, 1)) },
-            down: { path: Array.from(rectInnerOutlinePath(this.cell, 3)) },
+            up: { path: Array.from(cursorSkinPath(CELL, false)) },
+            down: { path: Array.from(cursorSkinPath(CELL, true)) },
         };
 
         this.width = this.previews.right + H_MARGIN;
@@ -150,6 +152,25 @@ function* rectOuterCupPath(rect, lineWidth) {
     yield [x1, y0];
 }
 
+function* gridBackPath(rect, cellSize) {
+    yield* rectFillPath(rect);
+    /* checkerboard: */
+    // for (let i = 0; i < COLS; i++) {
+    //     for (let j = 0; j < ROWS; j++) {
+    //         if ((i + j) % 2 === 0) {
+    //             continue;
+    //         }
+    //         yield* rectFillPath({
+    //             x: rect.x + i * cellSize,
+    //             y: rect.y + j * cellSize,
+    //             width: cellSize,
+    //             height: cellSize,
+    //         });
+    //         yield null;
+    //     }
+    // }
+}
+
 function* gridLinesPath(rect, lineWidth, cellSize) {
     for (let i = 1; i < COLS; i++) {
         yield* rectFillPath({
@@ -169,4 +190,35 @@ function* gridLinesPath(rect, lineWidth, cellSize) {
         });
         yield null;
     }
+}
+
+function* blockSkinPathL0(cellSize) {
+    // base color
+    yield* rectFillPath({ x: 0, y: 0, width: cellSize, height: cellSize });
+}
+
+function* blockSkinPathL1(cellSize) {
+    // lighter
+    let x0 = 0, x1 = cellSize / 2, x2 = cellSize;
+    let y0 = 0, y1 = cellSize / 2;
+    yield [x0, y0];
+    yield [x2, y0];
+    yield [x1, y1];
+}
+
+function* blockSkinPathL2(cellSize) {
+    // darker
+    let x0 = 0, x1 = cellSize / 2, x2 = cellSize;
+    let y0 = cellSize / 2, y1 = cellSize;
+    yield [x0, y1];
+    yield [x2, y1];
+    yield [x1, y0];
+}
+
+function* ghostSkinPath(cellSize) {
+    yield* rectInnerOutlinePath({ x: 2, y: 2, width: cellSize - 3, height: cellSize - 3 }, 2);
+}
+
+function* cursorSkinPath(cellSize, down) {
+    yield* rectInnerOutlinePath({ x: 0, y: 0, width: cellSize, height: cellSize }, down ? 3 : 1);
 }

@@ -27,16 +27,26 @@ export class Renderer {
                 color: skin.cursor.down,
                 path: geometry.cursor.down.path,
             },
-            cell: {
-                transform: { tx: 0, ty: 0 },
-                color: { fill: null, alpha: 0.0 },
-                path: geometry.cell.path,
-            },
-            mini: {
+            playfieldCell: geometry.cell.paths.map(path => ({
                 transform: { tx: 0, ty: 0 },
                 color: { fill: null, alpha: 1.0 },
-                path: geometry.mini.path,
-            },
+                path,
+            })),
+            pieceCell: geometry.pieceCell.paths.map(path => ({
+                transform: { tx: 0, ty: 0 },
+                color: { fill: null, alpha: 1.0 },
+                path,
+            })),
+            ghostCell: geometry.ghostCell.paths.map(path => ({
+                transform: { tx: 0, ty: 0 },
+                color: { fill: null, alpha: skin.ghost.alpha },
+                path,
+            })),
+            queueCell: geometry.queueCell.paths.map(path => ({
+                transform: { tx: 0, ty: 0 },
+                color: { fill: null, alpha: 1.0 },
+                path,
+            })),
         };
     }
 
@@ -77,42 +87,51 @@ export class Renderer {
         draw(paths.gridLines);
         draw(paths.gridBorder);
 
-        paths.cell.color.alpha = 1.0;
-        for (let cell of playfield.getNonEmptyCells()) {
-            paths.cell.color.fill = skin.block[cell.type][0];
-            geometry.getCellTransform(cell, paths.cell.transform);
-            draw(paths.cell);
+        for (let layer = 0; layer < paths.playfieldCell.length; layer++) {
+            let path = paths.playfieldCell[layer];
+            for (let cell of playfield.getNonEmptyCells()) {
+                path.color.fill = skin.block[cell.type][layer];
+                geometry.getCellTransform(cell, path.transform);
+                draw(path);
+            }
         }
 
         if (ghost) {
-            paths.cell.color.alpha = 0.3;
-            paths.cell.color.fill = skin.block[ghost.type][0];
-            for (let cell of ghost.getCells()) {
-                geometry.getCellTransform(cell, paths.cell.transform);
-                draw(paths.cell);
+            for (let layer = 0; layer < paths.ghostCell.length; layer++) {
+                let path = paths.ghostCell[layer];
+                path.color.fill = skin.block[ghost.type][layer];
+                for (let cell of ghost.getCells()) {
+                    geometry.getCellTransform(cell, path.transform);
+                    draw(path);
+                }
             }
         }
 
         if (piece) {
-            paths.cell.color.alpha = 1.0;
-            paths.cell.color.fill = skin.block[piece.type][0];
-            for (let cell of piece.getCells()) {
-                geometry.getCellTransform(cell, paths.cell.transform);
-                draw(paths.cell);
+            for (let layer = 0; layer < paths.pieceCell.length; layer++) {
+                let path = paths.pieceCell[layer];
+                path.color.fill = skin.block[piece.type][layer];
+                for (let cell of piece.getCells()) {
+                    geometry.getCellTransform(cell, path.transform);
+                    draw(path);
+                }
             }
         }
 
-        if (queue.hold) {
-            paths.mini.color.fill = skin.block[queue.hold][0];
-            for (let t of geometry.getHoldCellTransform(queue.hold, paths.mini.transform)) {
-                draw(paths.mini);
+        for (let layer = 0; layer < paths.queueCell.length; layer++) {
+            let path = paths.queueCell[layer];
+            if (queue.hold) {
+                path.color.fill = skin.block[queue.hold][layer];
+                for (let t of geometry.getHoldCellTransform(queue.hold, path.transform)) {
+                    draw(path);
+                }
             }
-        }
-        for (let i = 0; i < queue.previews.length; i++) {
-            let type = queue.previews[i];
-            paths.mini.color.fill = skin.block[type][0];
-            for (let t of geometry.getPreviewCellTransforms(type, i, paths.mini.transform)) {
-                draw(paths.mini);
+            for (let i = 0; i < queue.previews.length; i++) {
+                let type = queue.previews[i];
+                path.color.fill = skin.block[type][layer];
+                for (let t of geometry.getPreviewCellTransforms(type, i, path.transform)) {
+                    draw(path);
+                }
             }
         }
 
