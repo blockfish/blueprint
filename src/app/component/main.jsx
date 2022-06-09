@@ -27,7 +27,7 @@ export const Main = ({}) => {
         redo() { dispatchEditor({ type: 'redo' }); },
         nextPage() { dispatchEditor({ type: 'next' }); },
         prevPage() { dispatchEditor({ type: 'prev' }); },
-        applyEdit(e) { dispatchEditor({ type: 'apply', payload: e }); }
+        applyEdit(e) { dispatchEditor({ type: 'apply', payload: e }); },
         reset() { dispatchEditor({ type: 'apply', payload: Edit.RESET }); },
         newPage() { dispatchEditor({ type: 'apply', payload: Edit.CREATE_PAGE }); },
         delPage() { dispatchEditor({ type: 'apply', payload: Edit.DELETE_PAGE }); },
