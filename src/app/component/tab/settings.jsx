@@ -11,6 +11,7 @@ const ACTIONS = [
     { action: 'right',     label: 'Move Right' },
     { action: 'ccw',       label: 'Rotate CCW' },
     { action: 'cw',        label: 'Rotate CW' },
+    { action: 'flip',      label: 'Rotate 180' },
     { action: 'drop',      label: 'Soft Drop' },
     { action: 'lock',      label: 'Hard Drop' },
     { action: 'hold',      label: 'Hold' },

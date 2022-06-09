@@ -1,4 +1,3 @@
-import { Move } from '../model/piece'
 import { Edit } from '../model/edit'
 import { Board } from '../component/board'
 import { ColorPicker } from '../component/color-picker'

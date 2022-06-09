@@ -14,6 +14,7 @@ const DEFAULT_KEYMAP = new Keymap(function*() {
     yield ['drop', Key.get('Down')];
     yield ['ccw', Key.get('Z')];
     yield ['cw', Key.get('X')];
+    yield ['flip', Key.get('C')];
     yield ['lock', Key.get('Space')];
     yield ['hold', Key.get('LeftShift')];
     yield ['toggle', Key.get('Enter')];
