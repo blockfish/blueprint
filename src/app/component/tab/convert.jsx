@@ -1,21 +1,39 @@
+import { Edit } from '../../model/edit'
 import { Button } from '../../component/button'
 import { Textarea } from '../../component/textarea'
+import * as Fumen from '../../format/fumen'
 
 const Body = React.memo(({
+    dispatchEditor,
 }) => {
-    // TODO [#5 #6]
+    let action = React.useMemo(() => ({
+        importDoc(doc) { dispatchEditor({ type: 'apply', payload: Edit.importDoc(doc) }); },
+    }), [dispatchEditor]);
+
     let [fumen, setFumen] = React.useState('');
+    let importFumen = React.useCallback(() => {
+        let doc;
+        try {
+            doc = Fumen.parse(fumen);
+        } catch (e) {
+            console.error(e);
+            alert(`Invalid fumen:\n${e.message}`);
+            return;
+        }
+        action.importDoc(doc.unzip());
+    }, [fumen, action.importDoc]);
+
+    // TODO [#5] custom code format
+
     return (
         <>
             <Textarea
                 value={fumen}
                 onChange={setFumen}
             >
-                enter "fumen" code
+                enter "fumen" code or URL
             </Textarea>
-            <Button onClick={null}>Generate (implemented)</Button>
-            <Button onClick={null}>Load (implemented)</Button>
-            <Button onClick={null}>Load from image (implemented)</Button>
+            <Button onClick={importFumen}>Import fumen</Button>
         </>
     );
 });
