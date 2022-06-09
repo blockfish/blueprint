@@ -28,6 +28,7 @@ npm install . --production=true || exit 1
 
 npx esbuild ./src/app --outdir="${tmpdir}" \
     --bundle \
+    --global-name=App \
     --platform=browser \
     --minify
 

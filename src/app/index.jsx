@@ -1,6 +1,5 @@
 import { Main } from './component/main'
 
-window['InitializeApp'] = rootContainer => {
-    ReactDOM.createRoot(rootContainer)
-        .render(<Main />);
-};
+export function init(rootContainer) {
+    ReactDOM.createRoot(rootContainer).render(<Main />);
+}

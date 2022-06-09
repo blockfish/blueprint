@@ -47,7 +47,7 @@ const SCRIPTS = [
           var c = document.getElementById('Container').classList;
           c.remove('in');
           c.add('out');
-          setTimeout(function() { InitializeApp(document.getElementById('Root')); }, 200);
+          setTimeout(function() { App.init(document.getElementById('Root')); }, 200);
       }, 300);
     </script>
   </body>
