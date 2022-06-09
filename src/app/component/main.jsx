@@ -36,8 +36,8 @@ export const Main = ({}) => {
 
     let dispatchStacker = useStacker(handling, doc.current, action.applyEdit);
 
-    useGlobalKeyboard(keymap, action => {
-        switch (action) {
+    useGlobalKeyboard(keymap, a => {
+        switch (a) {
         case 'tab1': setTab(0); break;
         case 'tab2': setTab(1); break;
         case 'tab3': setTab(2); break;
@@ -52,7 +52,7 @@ export const Main = ({}) => {
         case 'del-page': action.delPage(); break;
         case 'toggle': action.togglePiece(); break;
 
-        default: dispatchStacker(action); break;
+        default: dispatchStacker(a); break;
         }
     });
 
