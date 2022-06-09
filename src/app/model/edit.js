@@ -6,7 +6,8 @@ import { Queue } from '../model/queue'
 export let Flow = {};
 
 Flow.Comment = class {};
-Flow.MovePiece = class {};
+
+Flow.Move = class {};
 
 Flow.Draw = class {
     constructor(palette, playfield, pos) {
@@ -89,6 +90,22 @@ Edit.MIRROR = pageEdit({
     }
 });
 
+Edit.TOGGLE_PIECE = pageEdit({
+    desc: 'toggle piece',
+    apply(page) {
+        if (page.piece === null) {
+            if (page.queue.isEmpty) {
+                return page;
+            }
+            return page.spawnPiece();
+        } else {
+            return page
+                .setQueue(page.queue.pushFront(page.piece.type))
+                .setPiece(null);
+        }
+    }
+});
+
 Edit.draw = (palette, pos) => pageEdit({
     description: 'draw blocks',
     flowType: Flow.Draw,
@@ -117,64 +134,22 @@ Edit.comment = text => pageEdit({
     apply: page => page.setComment(text)
 });
 
-Edit.movePiece = move => pageEdit({
-    desc: 'move piece',
-    flowType: Flow.MovePiece,
-    initFlow: _doc => new Flow.MovePiece(),
-    apply(page) {
-        let piece = page.piece && move.apply(page.piece, page.playfield);
-        if (piece === null) {
-            return page;
-        }
-        return page.setPiece(piece);
-    }
+Edit.piece = (piece, queue) => pageEdit({
+    desc: 'change current piece',
+    flowType: Flow.Move,
+    initFlow: _doc => new Flow.Move(),
+    apply: page => page.setPiece(piece).setQueue(queue)
 });
 
-Edit.HOLD = pageEdit({
-    desc: 'hold',
-    apply(page) {
-        if (page.queue.isEmpty) {
-            return page;
-        }
-        let [newType, newQueue] = page.queue.swapHold(page.piece && page.piece.type);
-        return page
-            .setPiece(newType && new Piece(newType))
-            .setQueue(newQueue);
-    }
+Edit.lock = (lockPiece, piece, queue, playfield) => ({
+    desc: 'lock in piece',
+    apply: doc => doc
+        .setCurrent(doc.current.setPiece(lockPiece))
+        .insert(
+            doc.current
+                .setPiece(piece)
+                .setQueue(queue)
+                .setPlayfield(playfield)
+        )
 });
 
-Edit.TOGGLE_PIECE = pageEdit({
-    desc: 'toggle piece',
-    apply(page) {
-        if (page.piece === null) {
-            if (page.queue.isEmpty) {
-                return page;
-            }
-            return page.spawnPiece();
-        } else {
-            return page
-                .setQueue(page.queue.pushFront(page.piece.type))
-                .setPiece(null);
-        }
-    }
-});
-
-Edit.LOCK_PIECE = {
-    desc: 'place piece',
-    apply(doc) {
-        let page = doc.current;
-        if (page.piece === null) {
-            return doc;
-        }
-        let piece = page.piece.sonicDrop(page.playfield);
-        return doc.setCurrent(page.setPiece(piece)).insert(
-            page
-                .setPlayfield(
-                    page.playfield
-                        .setCells(piece.getCells())
-                        .clearFullRows()
-                )
-                .spawnPiece()
-        );
-    },
-};

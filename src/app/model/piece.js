@@ -30,7 +30,7 @@ export class Piece {
     }
 
     getCells() {
-        return (this._cellsMemo ||= getCells(this.type, this.rotation, this.x, this.y));
+        return (this._cellsMemo ||= getPieceCells(this.type, this.rotation, this.x, this.y));
     }
 
     offsetIntersects(matrix, { dx, dy }) {
@@ -60,30 +60,27 @@ export class Piece {
     }
 }
 
-function getCells(type, rotation, x0, y0) {
+function getPieceCells(type, rotation, x0, y0) {
+    let [xx, xy, yx, yy] = rotation.transform;
     return rules.shapes[type].map(([dx, dy]) => {
-        let [x, y] = rotation.apply(x0, y0, dx, dy);
-        return {x, y, type};
+        let x = x0 + xx * dx + xy * dy;
+        let y = y0 + yx * dx + yy * dy;
+        return { x, y, type };
     });
 }
 
 export class Rotation {
-    constructor(name, t) {
+    constructor(name, transform) {
         this.name = name;
-        this._t = t;
+        this.transform = transform;
         this.cw = null;
-    }
-
-    apply(x0, y0, dx, dy) {
-        let t = this._t;
-        let x = x0 + t[0] * dx + t[1] * dy;
-        let y = y0 + t[2] * dx + t[3] * dy;
-        return [x, y];
     }
 
     offset(dr) {
         let r = this;
-        for (let i = 0; i < (dr & 3); i++) { r = r.cw; }
+        for (let i = 0; i < (dr & 3); i++) {
+            r = r.cw;
+        }
         return r;
     }
 }
