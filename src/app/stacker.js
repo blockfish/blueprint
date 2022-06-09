@@ -41,6 +41,7 @@ export class Stacker {
             case 'hold': return this._swapHold();
             case 'ccw': return this._move(Move.CCW);
             case 'cw': return this._move(Move.CW);
+            case 'flip': return this._move(Move.FLIP);
             case 'drop': return this._move(repeats ? Move.SONIC_DROP : Move.DROP);
             case 'left': return this._move(repeats ? Move.INF_LEFT : Move.LEFT);
             case 'right': return this._move(repeats ? Move.INF_RIGHT : Move.RIGHT);
@@ -125,7 +126,7 @@ export class Stacker {
 
         switch (action) {
         case 'lock': case 'hold':
-        case 'ccw': case 'cw':
+        case 'ccw': case 'cw': case 'flip':
             this._enqueue(action);
             break;
 

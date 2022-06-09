@@ -5,7 +5,7 @@ import { Palette } from '../model/palette'
 const KEYMAP_ACTIONS = [
     'ccw', 'cw', 'del-page', 'drop', 'hold', 'left', 'lock', 'new-page',
     'next-page', 'prev-page', 'redo', 'reset', 'right', 'tab1', 'tab2', 'tab3',
-    'tab4', 'toggle', 'undo',
+    'tab4', 'toggle', 'undo', 'flip'
 ];
 
 export function save(dbMap) {
