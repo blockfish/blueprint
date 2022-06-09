@@ -15,32 +15,23 @@ export class Piece {
         this._cellsMemo = null;
     }
 
-    offsetBy({ dx, dy }) {
-        if (dx === 0 && dy === 0) {
+    offsetBy({ dx, dy, dr }) {
+        dx = (dx || 0);
+        dy = (dy || 0);
+        dr = (dr || 0) & 3;
+        if (dx === 0 && dy === 0 && dr === 0) {
             return this;
         }
-        return new Piece(this.type, this.x + dx, this.y + dy, this.rotation);
-    }
-
-    rotateBy(dr) {
-        if (dr === 0) {
-            return this;
-        }
-        return new Piece(this.type, this.x, this.y, this.rotation.offset(dr));
+        return new Piece(this.type, this.x + dx, this.y + dy, this.rotation.rotate(dr));
     }
 
     getCells() {
         return (this._cellsMemo ||= getPieceCells(this.type, this.rotation, this.x, this.y));
     }
 
-    offsetIntersects(matrix, { dx, dy }) {
-        // optimization: we compute getCells() less often by rolling "offsetBy" and
-        // "intersects" into a single operation that checks if moving the piece would
-        // intersect. this is useful since the only intersect checks we (currently) do are
-        // for checking if a movement would intersect or not before actually making that
-        // movement.
+    intersects(matrix) {
         for (let { x, y } of this.getCells()) {
-            if (matrix.getCell(x + dx, y + dy) !== null) {
+            if (matrix.getCell(x, y) !== null) {
                 return true;
             }
         }
@@ -52,11 +43,11 @@ export class Piece {
     }
 
     unstuck(matrix) {
-        let offs = { dx: 0, dy: 0 };
-        while (this.offsetIntersects(matrix, offs)) {
-            offs.dy++;
+        let unstuck = this;
+        while (unstuck.intersects(matrix)) {
+            unstuck = unstuck.offsetBy({ dy: 1 });
         }
-        return this.offsetBy(offs);
+        return unstuck;
     }
 }
 
@@ -76,7 +67,7 @@ export class Rotation {
         this.cw = null;
     }
 
-    offset(dr) {
+    rotate(dr) {
         let r = this;
         for (let i = 0; i < (dr & 3); i++) {
             r = r.cw;
@@ -95,43 +86,42 @@ Rotation.EAST.cw = Rotation.SOUTH;
 Rotation.SOUTH.cw = Rotation.WEST;
 Rotation.WEST.cw = Rotation.NORTH;
 
-Rotation.fromIndex = i => Rotation.NORTH.offset(i);
+Rotation.fromIndex = i => Rotation.NORTH.rotate(i);
 
 /* abstract */
 export class Move {
-    constructor() {
+    constructor(pickLastValid) {
         // - if true, then we should keep searching past valid locations until we find one
         //   that is invalid, then return the last valid location found
         // - if false, then we should stop searching when we find the first valid location
-        this.pickLastValidOffset = false;
+        this._pickLastValid = pickLastValid;
     }
 
     apply(piece, matrix) {
-        piece = this._rotate(piece);
-        let lastOffset = null;
+        let validPiece = null;
         for (let offset of this._getOffsets(piece)) {
-            if (piece.offsetIntersects(matrix, offset)) {
-                if (this.pickLastValidOffset) {
+            let resultPiece = piece.offsetBy(offset);
+            if (resultPiece.intersects(matrix, offset)) {
+                if (this._pickLastValid) {
                     break;
                 }
             } else {
-                lastOffset = offset;
-                if (!this.pickLastValidOffset) {
+                validPiece = resultPiece;
+                if (!this._pickLastValid) {
                     break;
                 }
             }
         }
-        return lastOffset ? piece.offsetBy(lastOffset) : null;
+        return validPiece;
     }
 
     /* virtual */
-    _rotate(piece) { return piece; }
     _getOffsets(piece) { throw new NotImplementedError(); }
 }
 
 class ShiftMove extends Move {
     constructor(dx, dy) {
-        super();
+        super(false);
         this._offsets = [{ dx, dy }];
     }
 
@@ -142,8 +132,7 @@ class ShiftMove extends Move {
 
 class ShiftRepeatMove extends Move {
     constructor(dx, dy) {
-        super();
-        this.pickLastValidOffset = true;
+        super(true);
         this._dx = dx;
         this._dy = dy;
     }
@@ -160,10 +149,9 @@ class ShiftRepeatMove extends Move {
 
 class RotateMove extends Move {
     constructor(dr) {
-        super();
+        super(false);
         this._dr = dr;
-        // precompute a nested mapping piecetype => rotation => applied kick test offsets.
-        // note that the rotation key is the *final rotation* (after rotating the piece)
+        // precompute a nested mapping piecetype => rotation => applied kick test offsets
         this._kicks = new Map();
         // rules.kicks is like {"LJSTZ": ..., "O": ...}, ie. each object key contains a
         // string listing the piece types it applies to.
@@ -175,19 +163,17 @@ class RotateMove extends Move {
                 // SRS bullshit; dx,dy = pointwise table[r0] - table[r1]
                 let offsets = table[r0].map(([x0, y0], i) => {
                     let [x1, y1] = table[r1][i];
-                    return { dx: x0 - x1, dy: y0 - y1 };
+                    let dx = x0 - x1;
+                    let dy = y0 - y1;
+                    return { dx, dy, dr };
                 });
-                kicks.set(Rotation.fromIndex(r1), offsets);
+                kicks.set(Rotation.fromIndex(r0), offsets);
             }
             // fortunately, js strings are like lists: "SZT" ~ ["S","Z","T"]
             for (let type of types) {
                 this._kicks.set(type, kicks);
             }
         }
-    }
-
-    _rotate(piece) {
-        return piece.rotateBy(this._dr);
     }
 
     _getOffsets(piece) {
