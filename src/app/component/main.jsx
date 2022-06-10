@@ -80,6 +80,7 @@ export const Main = ({}) => {
                 dispatchControls={dispatchControls}
                 dispatchEditor={dispatchEditor}
                 setPalette={setPalette}
+                doc={doc}
                 page={page}
                 handling={handling}
                 keymap={keymap}

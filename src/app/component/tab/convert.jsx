@@ -2,17 +2,38 @@ import { Edit } from '../../model/edit'
 import { Button } from '../../component/button'
 import { Textarea } from '../../component/textarea'
 import { decodeFumen } from '../../format/fumen'
+import { encodeString, decodeString, DecodeError } from '../../format'
 
 const Body = React.memo(({
     dispatchEditor,
+    doc,
 }) => {
     let action = React.useMemo(() => ({
         importDoc(doc) { dispatchEditor({ type: 'apply', payload: Edit.importDoc(doc) }); },
     }), [dispatchEditor]);
 
-    // TODO [#5] custom code format
-
+    let [code, setCode] = React.useState('');
     let [fumen, setFumen] = React.useState('');
+
+    let exportCode = React.useCallback(() => {
+        setCode(encodeString(doc.zip()));
+    }, [doc, setCode]);
+
+    let importCode = React.useCallback(() => {
+        let doc;
+        try {
+            doc = decodeString(code);
+        } catch (e) {
+            if (e instanceof DecodeError) {
+                alert(e.message);
+                console.error(e);
+                return;
+            } else {
+                throw e;
+            }
+        }
+        action.importDoc(doc.unzip());
+    }, [code, action.importDoc]);
 
     let importFumen = React.useCallback(() => {
         let doc;
@@ -37,6 +58,18 @@ const Body = React.memo(({
 
     return (
         <>
+            <Textarea
+                value={code}
+                onChange={setCode}
+            >
+                enter blueprint code or URL
+            </Textarea>
+            <div className="row">
+                <Button onClick={exportCode}>Export</Button>
+                <Button onClick={importCode}>Import</Button>
+                {sizeLabel(code)}
+            </div>
+            <hr />
             <Textarea
                 value={fumen}
                 onChange={setFumen}
