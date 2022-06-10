@@ -18,3 +18,34 @@ export function encodeVarint(writer, val) {
     }
     writer.write(0);
 }
+
+export function* fromRunLengths(lens) {
+    let val = 0, enabled = true;
+    for (let len of lens) {
+        if (enabled) {
+            for (let i = 0; i < len; i++) {
+                yield val + i;
+            }
+        }
+        val += len;
+        enabled = !enabled;
+    }
+}
+
+export function* toRunLengths(vals) {
+    let start = 0, end = 0;
+    for (let val of vals) {
+        if (val < end) { throw new RangeError; }
+        if (val === end) {
+            end++;
+        } else {
+            yield end - start;
+            yield val - end;
+            start = val;
+            end = val + 1;
+        }
+    }
+    if (end > start) {
+        yield end - start;
+    }
+}
