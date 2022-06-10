@@ -10,7 +10,10 @@ const Body = React.memo(({
         importDoc(doc) { dispatchEditor({ type: 'apply', payload: Edit.importDoc(doc) }); },
     }), [dispatchEditor]);
 
+    // TODO [#5] custom code format
+
     let [fumen, setFumen] = React.useState('');
+
     let importFumen = React.useCallback(() => {
         let doc;
         try {
@@ -23,7 +26,14 @@ const Body = React.memo(({
         action.importDoc(doc.unzip());
     }, [fumen, action.importDoc]);
 
-    // TODO [#5] custom code format
+    function sizeLabel(str) {
+        let noun = 'bytes';
+        switch (str.length) {
+        case 0: return undefined;
+        case 1: noun = 'byte'; break;
+        }
+        return (<h4>{`${str.length} ${noun}`}</h4>);
+    }
 
     return (
         <>
@@ -33,7 +43,10 @@ const Body = React.memo(({
             >
                 enter "fumen" code or URL
             </Textarea>
-            <Button onClick={importFumen}>Import fumen</Button>
+            <div className="row">
+                <Button onClick={importFumen}>Import fumen</Button>
+                {sizeLabel(fumen)}
+            </div>
         </>
     );
 });
