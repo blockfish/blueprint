@@ -11,7 +11,7 @@ export function useDocumentFromURL() {
         try {
             initialParse.parsed = parseURLQuery(document.location.search);
         } catch (e) {
-            console.error('error parsing from URL:', e.message);
+            console.error(e);
             initialParse.error = e;
         }
     }
