@@ -88,6 +88,24 @@ const LOCATION = {
     },
 };
 
+function absoluteToRelativeY(matrix, type, rotation, x, y) {
+    let piece = new Piece(type, x, 0, rotation).unstuck(matrix);
+    let ry = 0;
+    while (piece.y < y) {
+        piece = piece.offsetBy({ dy: 1 }).unstuck(matrix);
+        ry++;
+    }
+    return ry;
+}
+
+function relativeToAbsoluteY(matrix, type, rotation, x, ry) {
+    let piece = new Piece(type, x, 0, rotation).unstuck(matrix);
+    for (let i = 0; i < ry; i++) {
+        piece = piece.offsetBy({ dy: 1 }).unstuck(matrix);
+    }
+    return piece.y;
+}
+
 /* bitcode operations */
 
 class Op {
@@ -149,7 +167,8 @@ Op.SetPieceLocation = class extends Op {
             type = front;
             sim.queue = back;
         }
-        let [ x, y, rotation ] = this.location;
+        let [ x, ry, rotation ] = this.location;
+        let y = relativeToAbsoluteY(sim.playfield, type, rotation, x, ry);
         sim.piece = new Piece(type, x, y, rotation);
     }
 };
@@ -206,7 +225,8 @@ export function* compile(doc) {
                     yield new Op.PushFront(type);
                 }
             }
-            yield new Op.SetPieceLocation([ x, y, rotation ]);
+            let ry = absoluteToRelativeY(currentPlayfield, type, rotation, x, y);
+            yield new Op.SetPieceLocation([ x, ry, rotation ]);
         } else if (currentPiece) {
             yield new Op.UnsetPiece();
         }
