@@ -4,7 +4,7 @@ import { ColorPicker } from '../component/color-picker'
 import { Sidebar } from '../component/sidebar'
 import { Toolbar } from '../component/toolbar'
 import { useControls } from '../hook/controls'
-import { useDocumentFromURL } from '../hook/url'
+import { useURLDocument } from '../hook/url'
 import { useEditor } from '../hook/editor'
 import { useGlobalKeyboard } from '../hook/keyboard'
 import { useLocalStorageDatabase } from '../hook/storage'
@@ -15,7 +15,7 @@ import { useTab } from '../hook/tab'
 
 export const Main = ({}) => {
     let storageDB = useLocalStorageDatabase();
-    let initialDoc = useDocumentFromURL();
+    let [initialDoc, updateURL] = useURLDocument();
 
     let [tab, setTab] = useTab(storageDB);
     let [keymap, handling, dispatchControls] = useControls(storageDB);
@@ -56,6 +56,8 @@ export const Main = ({}) => {
         default: dispatchStacker(a); break;
         }
     });
+
+    React.useEffect(() => updateURL(doc), [doc, updateURL]);
 
     let page = doc.current;
 
