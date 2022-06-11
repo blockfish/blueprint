@@ -30,7 +30,8 @@ npx esbuild ./src/app --outdir="${tmpdir}" \
     --bundle \
     --global-name=App \
     --platform=browser \
-    --minify
+    --minify \
+    --loader:.bin=binary
 
 npx sass src/style/index.scss "${tmpdir}/style.css" \
     --no-source-map \

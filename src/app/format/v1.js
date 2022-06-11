@@ -6,6 +6,9 @@ import { Matrix } from '../model/matrix'
 import { NotImplementedError } from '../utils'
 import { encodeVarint, decodeVarint, fromRunLengths, toRunLengths } from './utils'
 
+import FROM_ASCII from '../../data/v1-text-from-ascii.bin'
+import TO_ASCII from '../../data/v1-text-to-ascii.bin'
+
 /* entry point: bitcode encoding/decoding */
 
 // decode(reader: BitReader) -> Iterator[Op]
@@ -168,6 +171,23 @@ const COORDS = {
     },
 }
 
+const TEXT = {
+    decode(reader) {
+        let charCodes = [];
+        for (let code; (code = decodeVarint(reader)) != 0; ) {
+            charCodes.push(code < 128 ? TO_ASCII[code] : code);
+        }
+        return String.fromCharCode(...charCodes);
+    },
+    encode(writer, text) {
+        for (let i = 0; i < text.length; i++) {
+            let code = text.charCodeAt(i);
+            encodeVarint(writer, code < 128 ? FROM_ASCII[code] : code);
+        }
+        encodeVarint(writer, 0);
+    },
+};
+
 /* bitcode operations */
 
 class Op {
@@ -267,6 +287,15 @@ Op.Lock = class extends Op {
     }
 };
 
+Op.SetComment = class extends Op {
+    static opcode = 7;
+    static fields = [ TEXT ];
+    get comment() { return this.fields[0]; }
+    exec(sim) {
+        sim.page = sim.page.setComment(this.comment);
+    }
+};
+
 /* bitcode compile, execute */
 
 // compile(doc: Document) -> Iterator[Op]
@@ -274,6 +303,7 @@ export function* compile(doc) {
     let currentPlayfield = null;
     let currentQueue = Queue.EMPTY;
     let currentPiece = null;
+    let currentComment = '';
 
     for (let page of doc.pages) {
         if (currentPlayfield && currentPiece
@@ -335,6 +365,11 @@ export function* compile(doc) {
         for (let i = currentQueue.previews.length; i < page.queue.previews.length; i++) {
             yield new Op.PushBack(page.queue.previews[i]);
             currentQueue = currentQueue.pushBack(page.queue.previews[i]);
+        }
+
+        if (currentComment !== page.comment) {
+            yield new Op.SetComment(page.comment);
+            currentComment = page.comment;
         }
     }
 }

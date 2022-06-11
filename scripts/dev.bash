@@ -46,6 +46,7 @@ function sass {
 function esb {
     exec npx esbuild ./src/app --outdir=.dev \
         --bundle --global-name=App \
+        --loader:.bin=binary \
         --sourcemap=inline \
         --platform=browser \
         --watch
