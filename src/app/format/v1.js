@@ -253,6 +253,20 @@ Op.Fill = class extends Op {
     }
 };
 
+Op.Lock = class extends Op {
+    static opcode = 5;
+    static fields = [];
+    exec(sim) {
+        let piece = sim.piece;
+        if (!piece) {
+            throw new Error('Trying to lock with no active piece');
+        }
+        sim.insertPage(sim.page);
+        sim.playfield = sim.playfield.lock(piece);
+        sim.piece = null;
+    }
+};
+
 /* bitcode compile, execute */
 
 // compile(doc: Document) -> Iterator[Op]
@@ -262,10 +276,17 @@ export function* compile(doc) {
     let currentPiece = null;
 
     for (let page of doc.pages) {
-        if (currentPlayfield !== null) {
-            yield new Op.InsertPage();
+        if (currentPlayfield && currentPiece
+            && currentPlayfield.lock(currentPiece).equals(page.playfield))
+        {
+            yield new Op.Lock();
+            currentPiece = null;
+        } else {
+            if (currentPlayfield !== null) {
+                yield new Op.InsertPage();
+            }
+            yield* compileMatrix(page.playfield, currentPlayfield || Matrix.EMPTY);
         }
-        yield* compileMatrix(page.playfield, currentPlayfield || Matrix.EMPTY);
         currentPlayfield = page.playfield;
 
         if (page.queue.hold !== currentQueue.hold) {
