@@ -4,14 +4,14 @@ import { ColorPicker } from '../component/color-picker'
 import { Sidebar } from '../component/sidebar'
 import { Toolbar } from '../component/toolbar'
 import { useControls } from '../hook/controls'
+import { useDocumentFromURL } from '../hook/url'
 import { useEditor } from '../hook/editor'
-import { useFadeIn } from '../hook/fade'
 import { useGlobalKeyboard } from '../hook/keyboard'
 import { useLocalStorageDatabase } from '../hook/storage'
 import { usePalette } from '../hook/palette'
+import { useRisingEdge } from '../hook/utils'
 import { useStacker } from '../hook/stacker'
 import { useTab } from '../hook/tab'
-import { useDocumentFromURL } from '../hook/url'
 
 export const Main = ({}) => {
     let storageDB = useLocalStorageDatabase();
@@ -57,12 +57,10 @@ export const Main = ({}) => {
         }
     });
 
-    let fadeInCls = useFadeIn();
-
     let page = doc.current;
 
     return (
-        <main className={fadeInCls}>
+        <main className={useFadeInClassName()}>
             <Board
                 dispatchEditor={dispatchEditor}
                 page={page}
@@ -89,3 +87,7 @@ export const Main = ({}) => {
         </main>
     );
 };
+
+function useFadeInClassName() {
+    return useRisingEdge() ? 'fade in' : 'fade out';
+}
