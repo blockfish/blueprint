@@ -1,6 +1,7 @@
 import { Document } from '../model/document'
 import { Page } from '../model/page'
 import { Queue } from '../model/queue'
+import { Piece, Rotation } from '../model/piece'
 import { NotImplementedError } from '../utils'
 import { encodeVarint, decodeVarint } from './utils'
 
@@ -73,6 +74,20 @@ const PIECE_TYPE = {
     },
 };
 
+const LOCATION = {
+    decode(reader) {
+        let rotation = Rotation.fromIndex(reader.read(2));
+        let xy = decodeVarint(reader);
+        let x = xy % 10;
+        let y = (xy - x) / 10;
+        return [ x, y, rotation ];
+    },
+    encode(writer, [ x, y, rotation ]) {
+        writer.write(rotation.toIndex(), 2);
+        encodeVarint(writer, x + 10 * y);
+    },
+};
+
 /* bitcode operations */
 
 class Op {
@@ -120,12 +135,38 @@ Op.UnsetHold = class extends Op {
     exec(sim) { sim.queue = sim.queue.setHold(null); }
 };
 
+Op.SetPieceLocation = class extends Op {
+    static opcode = 4;
+    static fields = [ LOCATION ];
+    get location() { return this.fields[0]; }
+    exec(sim) {
+        let type = sim.piece?.type;
+        if (!type) {
+            let [front, back] = sim.queue.popFront();
+            if (!front) {
+                throw new Error('Trying to spawn piece with empty queue');
+            }
+            type = front;
+            sim.queue = back;
+        }
+        let [ x, y, rotation ] = this.location;
+        sim.piece = new Piece(type, x, y, rotation);
+    }
+};
+
+Op.UnsetPiece = class extends Op {
+    static opcode = 9;
+    static fields = [];
+    exec(sim) { sim.piece = null; }
+};
+
 /* bitcode compile, execute */
 
 // compile(doc: Document) -> Iterator[Op]
 export function* compile(doc) {
     let currentPlayfield = null;
     let currentQueue = Queue.EMPTY;
+    let currentPiece = null;
 
     for (let page of doc.pages) {
         if (currentPlayfield !== null) {
@@ -149,6 +190,27 @@ export function* compile(doc) {
                 currentQueue = currentQueue.setHold(target);
             }
         }
+
+        if (page.piece) {
+            let { type, x, y, rotation } = page.piece;
+            if (currentPiece?.type !== type) {
+                if (currentPiece) {
+                    yield new Op.UnsetPiece();
+                }
+                let [front, rest] = currentQueue.popFront();
+                if (front === type) {
+                    currentQueue = rest;
+                } else {
+                    // push the desired piece type onto the front; it gets immediately popped
+                    // and used for the piece
+                    yield new Op.PushFront(type);
+                }
+            }
+            yield new Op.SetPieceLocation([ x, y, rotation ]);
+        } else if (currentPiece) {
+            yield new Op.UnsetPiece();
+        }
+        currentPiece = page.piece;
 
         while (!page.queue.previews.startsWith(currentQueue.previews)) {
             yield new Op.PopFront();
@@ -179,6 +241,8 @@ class Simulator {
     set page(x) { this.doc = this.doc.setCurrent(x); }
     get queue() { return this.page.queue; }
     set queue(x) { this.page = this.page.setQueue(x); }
+    get piece() { return this.page.piece; }
+    set piece(x) { this.page = this.page.setPiece(x); }
 
     insertPage(p) {
         this.doc = this.doc.insert(p);
