@@ -1,4 +1,4 @@
-import * as Fumen from './fumen'
+import { decodeFumen } from './fumen'
 
 const FUMEN_REGEX = /^\?[vmd]11[50]@/;
 
@@ -13,7 +13,7 @@ export function parseURLQuery(query) {
         return null;
     }
     if (FUMEN_REGEX.test(query)) {
-        return Fumen.parse(query);
+        return decodeFumen(query);
     }
     throw new UnknownURLFormatError();
 }

@@ -1,7 +1,7 @@
 import { Edit } from '../../model/edit'
 import { Button } from '../../component/button'
 import { Textarea } from '../../component/textarea'
-import * as Fumen from '../../format/fumen'
+import { decodeFumen } from '../../format/fumen'
 
 const Body = React.memo(({
     dispatchEditor,
@@ -17,7 +17,7 @@ const Body = React.memo(({
     let importFumen = React.useCallback(() => {
         let doc;
         try {
-            doc = Fumen.parse(fumen);
+            doc = decodeFumen(fumen);
         } catch (e) {
             console.error(e);
             alert(`Invalid fumen:\n${e.message}`);
