@@ -1,7 +1,7 @@
 import { Matrix, fillRowCells } from '../model/matrix'
 import { Document } from '../model/document'
 import { Piece } from '../model/piece'
-import { Queue } from '../model/queue'
+import { Queue, BagRandomizer } from '../model/queue'
 
 export let Flow = {};
 
@@ -80,7 +80,7 @@ Edit.CLEAR = pageEdit({
 Edit.TOGGLE_RANDOMIZER = pageEdit({
     desc: 'toggle randomizer',
     apply: page => page.setQueue(
-        page.queue.setRandomizer(page.queue.randomizer ? null : Queue.BAG_RANDOMIZER)
+        page.queue.setRandomizer(page.queue.randomizer ? null : BagRandomizer.init())
     )
 });
 
