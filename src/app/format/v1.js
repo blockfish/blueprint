@@ -1,6 +1,7 @@
 import { Document } from '../model/document'
 import { Page } from '../model/page'
-import { Queue } from '../model/queue'
+import { Queue, BagRandomizer } from '../model/queue'
+import { PRNG } from '../model/prng'
 import { Piece, Rotation } from '../model/piece'
 import { Matrix } from '../model/matrix'
 import { NotImplementedError } from '../utils'
@@ -188,6 +189,29 @@ const TEXT = {
     },
 };
 
+const BAG_RANDOMIZER = {
+    decode(reader) {
+        let s = new Int32Array(2);
+        s[0] = reader.read(32);
+        s[1] = reader.read(32);
+        let idx = reader.read(3);
+        return new BagRandomizer(new PRNG(s), idx);
+    },
+    encode(writer, rand) {
+        writer.write(rand.prng.s[0], 32);
+        writer.write(rand.prng.s[1], 32);
+        writer.write(rand.idx, 3);
+    },
+};
+
+function randomizerEqual(r1, r2) {
+    if (r1 === null) { return r2 === null; }
+    if (r2 === null) { return r1 === null; }
+    let s1 = new Uint32Array(r1.prng.s);
+    let s2 = new Uint32Array(r2.prng.s);
+    return s1[0] === s2[0] && s1[1] === s2[1] && r1.idx === r2.idx;
+}
+
 /* bitcode operations */
 
 class Op {
@@ -233,6 +257,19 @@ Op.UnsetHold = class extends Op {
     static opcode = 10;
     static fields = [];
     exec(sim) { sim.queue = sim.queue.setHold(null); }
+};
+
+Op.SetBagRandomizer = class extends Op {
+    static opcode = 11;
+    static fields = [ BAG_RANDOMIZER ];
+    get randomizer() { return this.fields[0]; }
+    exec(sim) { sim.queue = sim.queue.setRandomizer(this.randomizer); }
+};
+
+Op.UnsetRandomizer = class extends Op {
+    static opcode = 12;
+    static fields = [];
+    exec(sim) { sim.queue = sim.queue.setRandomizer(null); }
 };
 
 Op.SetPieceLocation = class extends Op {
@@ -359,12 +396,28 @@ export function* compile(doc) {
         currentPiece = page.piece;
 
         while (!page.queue.previews.startsWith(currentQueue.previews)) {
+            if (currentQueue.randomizer) {
+                // XXX(iitalics): if we ever find ourselves messing with the previews,
+                // then the randomizer is no longer reliable and we need to turn it off.
+                yield new Op.UnsetRandomizer();
+                currentQueue = currentQueue.setRandomizer(null);
+            }
             yield new Op.PopFront();
             currentQueue = currentQueue.popFront()[1];
         }
         for (let i = currentQueue.previews.length; i < page.queue.previews.length; i++) {
             yield new Op.PushBack(page.queue.previews[i]);
             currentQueue = currentQueue.pushBack(page.queue.previews[i]);
+        }
+
+        if (!randomizerEqual(page.queue.randomizer, currentQueue.randomizer)) {
+            if (page.queue.randomizer instanceof BagRandomizer) {
+                yield new Op.SetBagRandomizer(page.queue.randomizer);
+                currentQueue = currentQueue.setRandomizer(page.queue.randomizer);
+            } else {
+                yield new Op.UnsetRandomizer();
+                currentQueue = currentQueue.setRandomizer(null);
+            }
         }
 
         if (currentComment !== page.comment) {
