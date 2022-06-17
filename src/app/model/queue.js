@@ -2,7 +2,7 @@ import rules from '../../data/rules'
 import { PRNG } from '../model/prng'
 
 export class Queue {
-    constructor(previews, hold, randomizer) {
+    constructor(previews, hold, randomizer = null) {
         if (randomizer) {
             let next;
             while (previews.length < rules.previews) {
@@ -28,27 +28,30 @@ export class Queue {
     }
 
     popFront() {
-        if (this.previews.length === 0) {
-            return [this.hold, Queue.EMPTY];
+        let hold = this.hold;
+        let front = this.previews[0] || null;
+        let rest = this.previews.substring(1);
+        if (!front) {
+            return [hold, Queue.EMPTY];
         }
-        return [
-            this.previews[0],
-            new Queue(this.previews.substring(1), this.hold, this.randomizer)
-        ];
+        return [front, new Queue(rest, hold, this.randomizer)];
+    }
+
+    swapHold() {
+        let hold = this.hold;
+        let front = this.previews[0] || null;
+        let rest = this.previews.substring(1);
+        if (!hold) {
+            return new Queue(rest, front, this.randomizer);
+        }
+        return new Queue(hold + rest, front, this.randomizer);
     }
 
     swapHoldCurrent(current) {
-        let top = this.previews[0] || null;
-        let rest = this.previews.substring(1);
-        let hold = this.hold;
         if (!current) {
-            [hold, current, top] = [top, current, hold];
-        } else if (!hold) {
-            [hold, current, top] = [current, top, hold];
-        } else {
-            [hold, current, top] = [current, hold, top];
+            return [null, this.swapHold()];
         }
-        return [current, new Queue(top ? (top + rest) : rest, hold, this.randomizer)];
+        return this.pushFront(current).swapHold().popFront();
     }
 
     toString() {
