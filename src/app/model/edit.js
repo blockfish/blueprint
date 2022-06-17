@@ -127,9 +127,11 @@ Edit.draw = (palette, pos) => pageEdit({
 });
 
 Edit.queue = queue => pageEdit({
-    desc: 'change page comment',
+    desc: 'change queue',
     // TODO [#10] may need to add a new 'flow' for queue modifications
-    apply: page => page.setQueue(queue)
+    apply: page => page.piece
+        ? page.setQueue(queue).spawnPiece()
+        : page.setQueue(queue)
 });
 
 Edit.comment = text => pageEdit({

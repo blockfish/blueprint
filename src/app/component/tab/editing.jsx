@@ -22,7 +22,12 @@ const Body = React.memo(({
     }), [dispatchEditor, setPalette]);
 
     let togglePiece = (page.piece || !page.queue.isEmpty) ? action.togglePiece : null;
-    let hasRandomizer = !!page.queue.randomizer;
+
+    let queue = React.useMemo(() => {
+        return page.piece
+            ? page.queue.pushFront(page.piece.type)
+            : page.queue;
+    }, [page.queue, page.piece?.type]);
 
     // TODO [#7] cheese garbage
     // let [garbage, setGarbage] = React.useState(false);
@@ -35,8 +40,8 @@ const Body = React.memo(({
                 <Button onClick={action.clear}>Clear</Button>
             </div>
             <hr />
-            <QueueEntry queue={page.queue} onChange={action.setQueue} />
-            <Checkbox checked={!!page.queue.randomizer} onToggle={action.toggleRandomizer}>7bag randomizer</Checkbox>
+            <QueueEntry queue={queue} onChange={action.setQueue} />
+            <Checkbox checked={!!queue.randomizer} onToggle={action.toggleRandomizer}>7bag randomizer</Checkbox>
             <Checkbox checked={!!page.piece} onToggle={togglePiece}>Current piece</Checkbox>
             <hr />
             <Textarea
