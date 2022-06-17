@@ -16,10 +16,10 @@ export function parse(data) {
         let queue, current;
         if (flags.quiz && comment.startsWith('#Q=')) {
             [current, queue] = fumenQuizToQueue(comment);
-            if (piece === null) {
-                queue = queue.pushFront(current);
-            } else if (current !== piece.type) {
-                [current, queue] = queue.swapHold(current);
+            if (!piece) {
+                queue = current ? queue.pushFront(current) : queue;
+            } else if (piece?.type != current) {
+                [current, queue] = queue.swapHoldCurrent(current);
                 if (current !== piece.type) {
                     throw new Error(`expected piece ${piece.type} not at front of queue`);
                 }

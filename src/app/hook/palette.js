@@ -1,6 +1,6 @@
 import { Palette } from '../model/palette'
 
-const DEFAULT_PALETTE = new Palette('g', true);
+const DEFAULT_PALETTE = new Palette('g', false);
 
 export function usePalette(db) {
     let [palette, setPalette] = React.useState(db.load('palette') || DEFAULT_PALETTE);

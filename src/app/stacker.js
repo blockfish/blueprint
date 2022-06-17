@@ -100,7 +100,7 @@ export class Stacker {
     }
 
     _swapHold() {
-        let [pieceType, resultQueue] = this.queue.swapHold(this.piece?.type || null);
+        let [pieceType, resultQueue] = this.queue.swapHoldCurrent(this.piece?.type || null);
         let resultPiece = pieceType ? new Piece(pieceType) : null;
         this.queue = resultQueue;
         this.piece = resultPiece;
