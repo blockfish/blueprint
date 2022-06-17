@@ -1,4 +1,5 @@
 import rules from '../../data/rules'
+import { PRNG } from '../model/prng'
 
 export class Queue {
     constructor(previews, hold, randomizer) {
@@ -72,18 +73,33 @@ export class InvalidQueueStringError extends Error {
     }
 }
 
-class BagRandomizer {
-    constructor(bag = '') {
-        this.bag = bag.length > 0 ? bag : Array.from(rules.bag);
+const BAG = rules.bag;
+
+export class BagRandomizer {
+    constructor(prng, idx, bag = null) {
+        if (idx >= BAG.length) {
+            // shuffle just to reseed the PRNG, then request a new bag via below condition
+            prng = prng.shuffle(new Array(BAG.length));
+            bag = null;
+            idx = 0;
+        }
+        if (bag == null) {
+            // XXX(iitalics): intentionally don't store the post-shuffle PRNG inside;
+            // `this.bag` is only a form of memoization. the PRNG will be reseeded *after*
+            // reaching the end of the bag.
+            let order = Array.from(BAG);
+            prng.shuffle(order);
+            bag = order.join('');
+        }
+        this.prng = prng;
+        this.idx = idx;
+        this.bag = bag;
     }
 
     gen() {
-        let bag = Array.from(this.bag);
-        // TODO [#11] should use a deterministic PRNG instead of Math.random
-        let idx = Math.floor(Math.random() * bag.length);
-        let [next] = bag.splice(idx, 1);
-        return [next, new BagRandomizer(bag)];
+        let { prng, idx, bag } = this;
+        return [bag[idx], new BagRandomizer(prng, idx + 1, bag)];
     }
 }
 
-Queue.BAG_RANDOMIZER = new BagRandomizer();
+BagRandomizer.init = () => new BagRandomizer(new PRNG(), BAG.length);

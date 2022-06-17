@@ -1,5 +1,5 @@
 import { Page } from '../model/page'
-import { Queue } from '../model/queue'
+import { Queue, BagRandomizer } from '../model/queue'
 
 export class Document {
     constructor(pages) {
@@ -128,7 +128,7 @@ Document.Zipper = Zipper;
 
 Document.init = () => new Document([
     Page.EMPTY
-        .setQueue(Queue.EMPTY.setRandomizer(Queue.BAG_RANDOMIZER))
+        .setQueue(Queue.EMPTY.setRandomizer(BagRandomizer.init()))
         .spawnPiece()
 ]);
 
