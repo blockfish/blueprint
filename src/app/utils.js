@@ -16,6 +16,18 @@ export function cancelBubble(ev) {
     }
 }
 
+export function buttonUnfocusCallback(onClick) {
+    return ev => {
+        // XXX(iitalics): it's necessary to blur() buttons after you click on them, that
+        // way the button stops capturing key events. this is especially important since
+        // clicking the button can cause it to immediately become disabled=true, which
+        // will cause it to swallow all key events without propogating them anywhere as
+        // long as the button is focused.
+        ev.currentTarget.blur();
+        onClick && onClick();
+    };
+}
+
 export class NotImplementedError extends Error {
     constructor() {
         super('not implemented');

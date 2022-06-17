@@ -1,4 +1,4 @@
-import { combine } from '../utils'
+import { combine, buttonUnfocusCallback } from '../utils'
 
 export const Button = React.memo(({
     className: cls,
@@ -6,7 +6,7 @@ export const Button = React.memo(({
     children,
 }) => (
     <div className={combine('button', cls)}>
-        <button disabled={!onClick} onClick={() => onClick && onClick(children)}>
+        <button disabled={!onClick} onClick={buttonUnfocusCallback(onClick)}>
             {children}
         </button>
     </div>

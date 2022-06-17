@@ -1,4 +1,4 @@
-import { combine } from '../utils'
+import { combine, buttonUnfocusCallback } from '../utils'
 import { Icon } from '../component/icon'
 
 export const IconButton = React.memo(({
@@ -8,7 +8,7 @@ export const IconButton = React.memo(({
     children,
 }) => (
     <div className={combine('icon-button', cls, selected && 'selected')}>
-        <button disabled={!onClick} onClick={onClick || null}>
+        <button disabled={!onClick} onClick={buttonUnfocusCallback(onClick)}>
             <Icon>{children}</Icon>
         </button>
     </div>
