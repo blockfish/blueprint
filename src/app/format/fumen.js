@@ -19,7 +19,7 @@ export function parse(data) {
             if (piece === null) {
                 queue = queue.pushFront(current);
             } else if (current !== piece.type) {
-                [current, queue] = queue.swapHold(current);
+                [current, queue] = queue.swapHoldCurrent(current);
                 if (current !== piece.type) {
                     throw new Error(`expected piece ${piece.type} not at front of queue`);
                 }

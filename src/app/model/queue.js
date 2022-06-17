@@ -37,7 +37,7 @@ export class Queue {
         ];
     }
 
-    swapHold(current) {
+    swapHoldCurrent(current) {
         let top = this.previews[0] || null;
         let rest = this.previews.substring(1);
         let hold = this.hold;
