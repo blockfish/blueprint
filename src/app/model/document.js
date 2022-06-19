@@ -143,4 +143,3 @@ Document.init = () => new Document([
         .setQueue(Queue.EMPTY.setRandomizer(BagRandomizer.init()))
         .spawnPiece()
 ]);
-
