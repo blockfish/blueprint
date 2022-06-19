@@ -2,8 +2,9 @@ import { Document } from '../model/document'
 import { Page } from '../model/page'
 import { Queue } from '../model/queue'
 import { Piece, Rotation } from '../model/piece'
+import { Matrix } from '../model/matrix'
 import { NotImplementedError } from '../utils'
-import { encodeVarint, decodeVarint } from './utils'
+import { encodeVarint, decodeVarint, fromRunLengths, toRunLengths } from './utils'
 
 /* entry point: bitcode encoding/decoding */
 
@@ -106,6 +107,67 @@ function relativeToAbsoluteY(matrix, type, rotation, x, ry) {
     return piece.y;
 }
 
+const CELL_TYPE = {
+    decode(reader) {
+        if (reader.read()) {
+            return 'g';
+        }
+        switch (reader.read(3)) {
+        case 1: return 'I';
+        case 2: return 'J';
+        case 3: return 'L';
+        case 4: return 'O';
+        case 5: return 'S';
+        case 6: return 'T';
+        case 7: return 'Z';
+        case 0: return null;
+        }
+    },
+    encode(writer, type) {
+        if (type === 'g') {
+            writer.write(1);
+            return;
+        }
+        writer.write(0);
+        switch (type) {
+        case 'I': writer.write(1, 3); break;
+        case 'J': writer.write(2, 3); break;
+        case 'L': writer.write(3, 3); break;
+        case 'O': writer.write(4, 3); break;
+        case 'S': writer.write(5, 3); break;
+        case 'T': writer.write(6, 3); break;
+        case 'Z': writer.write(7, 3); break;
+        case null: writer.write(0, 3); break;
+        }
+    },
+};
+
+const COORDS = {
+    decode(reader) {
+        let runLengths = new Array(decodeVarint(reader) + 1);
+        for (let i = 0; i < runLengths.length; i++) {
+            runLengths[i] = decodeVarint(reader) + (i > 0 ? 1 : 0);
+        }
+        let idxs = Array.from(fromRunLengths(runLengths));
+        return idxs.map(idx => {
+            let x = idx % 10;
+            let y = (idx - x) / 10;
+            return [x, y];
+        });
+    },
+    encode(writer, coords) {
+        let idxs = coords.map(([x, y]) => x + y * 10).sort((i, j) => i - j);
+        let runLengths = Array.from(toRunLengths(idxs));
+        if (runLengths.length === 0) {
+            return;
+        }
+        encodeVarint(writer, runLengths.length - 1);
+        for (let i = 0; i < runLengths.length; i++) {
+            encodeVarint(writer, runLengths[i] - (i > 0 ? 1 : 0));
+        }
+    },
+}
+
 /* bitcode operations */
 
 class Op {
@@ -179,6 +241,18 @@ Op.UnsetPiece = class extends Op {
     exec(sim) { sim.piece = null; }
 };
 
+Op.Fill = class extends Op {
+    static opcode = 6;
+    static fields = [ CELL_TYPE, COORDS ];
+    get type() { return this.fields[0]; }
+    get coords() { return this.fields[1]; }
+    exec(sim) {
+        sim.playfield = sim.playfield.setCells(
+            this.coords.map(([x, y]) => ({ x, y, type: this.type }))
+        );
+    }
+};
+
 /* bitcode compile, execute */
 
 // compile(doc: Document) -> Iterator[Op]
@@ -191,6 +265,7 @@ export function* compile(doc) {
         if (currentPlayfield !== null) {
             yield new Op.InsertPage();
         }
+        yield* compileMatrix(page.playfield, currentPlayfield || Matrix.EMPTY);
         currentPlayfield = page.playfield;
 
         if (page.queue.hold !== currentQueue.hold) {
@@ -243,6 +318,34 @@ export function* compile(doc) {
     }
 }
 
+function* compileMatrix(matrix, oldMatrix) {
+    let blocks = new Map();
+    for (let { x, y, type } of diffMatrix(oldMatrix, matrix)) {
+        let coords = blocks.get(type) || [];
+        blocks.set(type, coords);
+        coords.push([ x, y ]);
+    }
+    for (let [type, coords] of blocks) {
+        yield new Op.Fill(type, coords);
+    }
+}
+
+function* diffMatrix(before, after) {
+    // all cells that have changed color
+    for (let cell of after.getNonEmptyCells()) {
+        if (before.getCell(cell.x, cell.y) !== cell.type) {
+            yield cell;
+        }
+    }
+    // all cells that need to be erased
+    for (let cell of before.getNonEmptyCells()) {
+        if (after.getCell(cell.x, cell.y) === null) {
+            cell.type = null;
+            yield cell;
+        }
+    }
+}
+
 // execute(ops: Iterator[Op]) -> Document
 export function execute(ops) {
     let sim = new Simulator();
@@ -263,6 +366,8 @@ class Simulator {
     set queue(x) { this.page = this.page.setQueue(x); }
     get piece() { return this.page.piece; }
     set piece(x) { this.page = this.page.setPiece(x); }
+    get playfield() { return this.page.playfield; }
+    set playfield(x) { this.page = this.page.setPlayfield(x); }
 
     insertPage(p) {
         this.doc = this.doc.insert(p);
