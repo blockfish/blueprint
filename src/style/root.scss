@@ -1,4 +1,4 @@
-body > *:first-child { // root
+body > div:first-of-type { // root
     display: flex;
 }
 

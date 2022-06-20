@@ -22,6 +22,13 @@ const SCRIPTS = [
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
+    <header class="request" style="top:-50px;">
+      <button class="close">[x]</button>
+      <p>
+        want to help out? i could use some feedback if you have time
+        to <a target="_blank" href="/survey">fill out a quick survey about Blueprint</a>
+      </p>
+    </header>
     <div id="Root">
       <main class="container loading fade in" id="Container">
         <h3><strong><%= pkg.name %></strong> - <%= pkg.author %> <%= DATE.getFullYear() %></h3>
