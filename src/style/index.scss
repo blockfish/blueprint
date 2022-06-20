@@ -18,6 +18,7 @@
     $footer,
     $surface, $on-surface,
     $warning, $on-warning,
+    $request, $on-request,
     $comment, $on-comment,
     $tab-editing, $on-tab-editing,
     $tab-analysis, $on-tab-analysis,
@@ -32,6 +33,8 @@
     --th-on-surface: #{torgb($on-surface)};
     --th-warning: #{torgb($warning)};
     --th-on-warning: #{torgb($on-warning)};
+    --th-request: #{torgb($request)};
+    --th-on-request: #{torgb($on-request)};
     --th-comment: #{torgb($comment)};
     --th-on-comment: #{torgb($on-comment)};
     --th-tab-editing-primary: #{torgb($tab-editing)};
@@ -53,6 +56,7 @@ html {
         $background: #090d16,
         $surface: #121928, $on-surface: #ffffff,
         $warning: #f7c22e, $on-warning: #242424,
+        $request: #21afd9, $on-request: #242424,
         $comment: #ffffff, $on-comment: #000000,
         $tab-editing: #356dd6, $on-tab-editing: #ffffff,
         $tab-analysis: #0fa324, $on-tab-analysis: #ffffff,
@@ -66,6 +70,30 @@ html {
 body {
     margin: 0;
     background: rgb(var(--th-background));
+}
+
+header {
+    color: rgb(var(--on-primary));
+    background: rgb(var(--primary));
+    z-index: 1;
+
+    width: 100%;
+    position: absolute;
+    transition: top 0.7s ease-out;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    button.close {
+        margin-right: 0.2rem;
+        appearance: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+    }
 }
 
 footer {
@@ -154,6 +182,11 @@ h4 {
 .warning {
     --primary: var(--th-warning);
     --on-primary: var(--th-on-warning);
+}
+
+.request {
+    --primary: var(--th-request);
+    --on-primary: var(--th-on-request);
 }
 
 .comment {
