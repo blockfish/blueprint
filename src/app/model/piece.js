@@ -90,6 +90,19 @@ export class Rotation {
         case 3: return ccw;
         }
     }
+
+    toIndex() {
+        let r = this, i = 0;
+        while (r !== Rotation.NORTH) {
+            r = r.cw.cw.cw;
+            i++;
+        }
+        return i;
+    }
+
+    toString() {
+        return this.name;
+    }
 }
 
 Rotation.NORTH = new Rotation('N', [1, 0, 0, 1]);

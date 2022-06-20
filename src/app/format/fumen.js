@@ -5,7 +5,7 @@ import { Matrix } from '../model/matrix'
 import { Queue } from '../model/queue'
 import { Piece, Rotation } from '../model/piece'
 
-export function parse(data) {
+export function decodeFumen(data) {
     let fumenPages = decode(data);
 
     let pages = [];

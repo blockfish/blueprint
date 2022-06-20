@@ -1,22 +1,41 @@
-import { parseURLQuery } from '../format'
+import { Document } from '../model/document'
+import { parseURLQuery, encodeString } from '../format'
+import { useDelay } from '../hook/utils'
 
-export function useDocumentFromURL() {
+function encodeURL(location, doc) {
+    let code = encodeString(doc);
+    return `${location.origin}${location.pathname}?${code}`;
+}
+
+export function useURLDocument(location = document.location, history = window.history) {
     let ref = React.useRef(null);
-    let initialParse = ref.current;
-    if (!initialParse) {
-        initialParse = ref.current = {
-            parsed: null,
-            error: null,
-        };
+    if (!ref.current) {
+        ref.current = { saved: null, parsed: null, parseError: null };
         try {
-            initialParse.parsed = parseURLQuery(document.location.search);
+            ref.current.parsed = parseURLQuery(location.search);
         } catch (e) {
-            console.error('error parsing from URL:', e.message);
-            initialParse.error = e;
+            console.error(e);
+            ref.current.parseError = e;
         }
+        ref.current.parsed ||= Document.init();
+        ref.current.saved = ref.current.parsed;
     }
 
-    // TODO [#5] url auto update
+    let update = useDelay(1000, doc => {
+        let { saved, parsed, parseError } = ref.current;
+        if (doc.zip) {
+            doc = doc.zip();
+        }
+        if (saved && saved.equals(doc)) {
+            return;
+        }
+        let url = encodeURL(location, doc);
+        // FIXME: pushState if modified from the initially parsed doc
+        // FIXME: handle popstate events
+        history.replaceState(null, '', url);
+        ref.current.saved = doc;
+    });
+    update = React.useCallback(update, [ref]);
 
-    return initialParse.parsed;
+    return [ref.current.parsed, update];
 }

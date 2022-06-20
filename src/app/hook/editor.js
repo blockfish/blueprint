@@ -9,7 +9,7 @@ export function useEditor(initialDoc) {
 
 function init(initialDoc) {
     return {
-        doc: (initialDoc || Document.init()).unzip(),
+        doc: initialDoc.unzip(),
         history: History.EMPTY,
         flow: null,
     };

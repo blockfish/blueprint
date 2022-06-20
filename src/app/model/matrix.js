@@ -87,6 +87,15 @@ export class Matrix {
     lock(piece) {
         return this.setCells(piece.getCells()).clearFullRows();
     }
+
+    equals(other) {
+        for (let i = 0; i < this._cellArray.length; i++) {
+            if (this._cellArray[i] !== other._cellArray[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 Matrix.EMPTY = new Matrix(new Uint8Array(ROWS * COLS));

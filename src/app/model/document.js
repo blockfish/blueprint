@@ -20,6 +20,18 @@ export class Document {
         }
         return new Zipper(0, this.count, head.page, null, head.next);
     }
+
+    equals(other) {
+        if (this.pages.length !== other.pages.length) {
+            return false;
+        }
+        for (let i = 0; i < this.pages.length; i++) {
+            if (this.pages[i] !== other.pages[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 class Zipper {
@@ -131,4 +143,3 @@ Document.init = () => new Document([
         .setQueue(Queue.EMPTY.setRandomizer(BagRandomizer.init()))
         .spawnPiece()
 ]);
-

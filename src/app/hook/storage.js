@@ -1,3 +1,4 @@
+import { useDelay } from '../hook/utils'
 import { Database } from '../storage/db'
 
 export function useLocalStorageDatabase() {
@@ -19,18 +20,4 @@ export function useLocalStorageDatabase() {
         }
     });
     return db;
-}
-
-// returns a function that acts like 'func', but has 'delay' ms delay, and if the function
-// is called again before the delay is over, then the previous call is cancelled.
-function useDelay(delay, func) {
-    let tm = React.useRef(null);
-    React.useEffect(() => () => clearTimeout(tm.current), [tm]);
-    return (...args) => {
-        clearTimeout(tm.current);
-        tm.current = setTimeout(() => {
-            tm.current = null;
-            func(...args);
-        }, delay);
-    };
 }
