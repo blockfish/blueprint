@@ -9,6 +9,10 @@ const REQUEST_KEY = 'request-seen';
 const REQUEST_NAME = 'survey-1';
 
 function manageRequestHeader(elem) {
+    if (!elem) {
+        return;
+    }
+
     if (localStorage.getItem(REQUEST_KEY) === REQUEST_NAME) {
         return;
     }
