@@ -1,7 +1,7 @@
 import skin from '../../data/skin'
 import { combine } from '../utils'
 
-const COLORS = [...'gZLOSJI'];
+const COLORS = [...'gTZLOSJI'];
 
 export const ColorPicker = React.memo(({
     palette,
