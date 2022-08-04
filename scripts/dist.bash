@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+readonly DOMAIN=bp.tali.software
+
 cd "$(dirname $0)"
 cd "$(git rev-parse --show-toplevel)"
 
@@ -22,7 +24,9 @@ set -ex
 tmpdir="$(mktemp -d blueprint.XXXXXXXXXXXX)"
 root="${tmpdir}/root"
 
-npm install . --production=true || exit 1
+export NODE_ENV=production
+
+npm install . || exit 1
 
 # TODO [#12] should lint before building
 
@@ -33,15 +37,14 @@ npx esbuild ./src/app --outdir="${tmpdir}" \
     --minify \
     --loader:.bin=binary
 
-npx sass src/style/index.scss "${tmpdir}/style.css" \
+npx sass ./src/style/index.scss "${tmpdir}/style.css" \
     --no-source-map \
     --style=compressed
 
-npx ejs \
-    -f package.json -l pkg \
-    -w \
-    -o "${tmpdir}/index.html" \
-    src/index.prod.ejs
+npx ejs ./src/index.ejs --output-file "${tmpdir}/index.html" \
+    --data-file ./package.json \
+    --rm-whitespace --strict \
+    "domain=${DOMAIN}"
 
 www="${root}/usr/share/blueprint-web/www"
 mkdir -p "${www}" "${root}/etc/nginx/sites-available"

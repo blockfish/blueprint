@@ -1,23 +1,23 @@
 #!/usr/bin/bash
 
+readonly PORT=8080
+
 cd "$(dirname $0)"
 cd "$(git rev-parse --show-toplevel)"
 
-function safekill {
-    if ps "$1" >/dev/null 2>/dev/null; then
-        kill -2 "$1"
-    fi
-}
-
 sass_pid=
 esb_pid=
+ejs_pid=
 
 function cleanup {
-    safekill "${sass_pid}"
-    safekill "${esb_pid}"
+    for pid in ${sass_pid} ${esb_pid} ${ejs_pid}; do
+        kill -- "-$pid"
+    done
+    echo "bye"
 }
 
-trap cleanup EXIT
+trap cleanup SIGINT SIGTERM EXIT
+
 set -mx
 
 if ! test -d node_modules/http-server; then
@@ -27,7 +27,7 @@ fi
 
 if ! test -d .dev/public; then
     mkdir -p .dev/public
-    ln -s ../../src/index.dev.html .dev/public/index.html
+    ln -s ../index.html .dev/public/index.html
     ln -s ../../resources/icon/16x16.ico .dev/public/favicon.ico
     ln -s ../index.css .dev/public/style.css
     ln -s ../app.js .dev/public/bundle.js
@@ -52,13 +52,41 @@ function esb {
         --watch
 }
 
+function ejs {
+    set +x
+    local curStat
+    local newStat
+    local gitRev
+
+    while true; do
+        if [[ "${curStat}" == "${newStat}" ]]; then
+            gitRev="$(git log --format=%h -n1)"
+            newStat="$(stat -c%Z package.json) $(stat -c%Z ./src/index.ejs) ${gitRev}"
+        else
+            npx ejs ./src/index.ejs --output-file .dev/index.html \
+                --rm-whitespace --strict \
+                --data-file ./package.json \
+                "gitRev=${gitRev}" \
+                "port=${PORT}"
+
+            curStat="${newStat}"
+            echo "Rendered index.html."
+        fi
+        sleep 0.5
+    done
+}
+
 sass &
 sass_pid=$!
 
 esb &
 esb_pid=$!
 
+ejs &
+ejs_pid=$!
+
 npx http-server .dev/public \
+    --port "${PORT}" \
     --no-dotfiles \
-    -s \
+    --silent \
     -c-1 \

@@ -1,0 +1,82 @@
+<%_
+const DATE = new Date;
+const PRODUCTION = process.env['NODE_ENV'] === 'production';
+const PACKAGE = locals;
+
+const VERSION = PRODUCTION ? PACKAGE.version : `development ${locals.gitRev}`;
+const ORIGIN = PRODUCTION ? `https://${locals.domain}` : `http://localhost:${locals.port}`;
+
+const SCRIPTS = [
+  {
+    prod: "https://unpkg.com/react@18/umd/react.production.min.js",
+    dev: "/react.development.js",
+    percent: 20,
+  },
+  {
+    prod: "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
+    dev: "/react-dom.development.js",
+    percent: 40,
+  },
+  {
+    prod: "/bundle.js",
+    dev: "/bundle.js",
+    percent: 40,
+  },
+];
+const LOADER_TIMEOUT = [300, 500];
+
+_%>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= PACKAGE.name %><%= PRODUCTION ? '' : ' DEV BUILD' %></title>
+    <meta name="twitter:title" property="og:title" content="<%= PACKAGE.name %>" />
+    <meta name="twitter:description" property="og:description" content="<%= PACKAGE.description %>" />
+    <meta name="twitter:card" property="og:type" content="summary" />
+    <meta name="twitter:domain" content="bp.tali.software" />
+    <meta name="twitter:creator" content="@iitalics_tetris" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="<%= ORIGIN %>/" />
+    <meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="<%= ORIGIN %>/icon-md.png" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="Root">
+      <main class="container loading fade in" id="Container">
+        <h3>
+          <strong><%= PACKAGE.name %></strong>
+          - <%= PACKAGE.author %>
+          <%= DATE.getFullYear() %>
+        </h3>
+        <div class="progress"><div id="Bar"></div></div>
+      </main>
+    </div>
+    <footer>
+      <p>
+        Version <%= VERSION %>
+        <a href="<%- PACKAGE.homepage %>" target="_blank">[source code]</a>
+      </p>
+    </footer>
+    <%
+    let totalPercent = 0;
+    for (let { prod, dev, percent } of SCRIPTS) {
+      totalPercent += percent;
+      let path = PRODUCTION ? prod : dev;
+      let attr = path.startsWith("https://") ? ' crossorigin' : '';
+    _%>
+    <script<%- attr %> src="<%- path %>"></script>
+    <script>document.getElementById('Bar').style.width = '<%- totalPercent %>%';</script>
+    <%
+    }
+    _%>
+    <script>
+      (function() {
+        function fadeOut() { document.getElementById('Container').classList.replace('in', 'out'); }
+        function init() { App.init(document.getElementById('Root')); }
+        setTimeout(fadeOut, <%- LOADER_TIMEOUT[0] %>);
+        setTimeout(init, <%- LOADER_TIMEOUT[1] %>);
+      })();
+    </script>
+  </body>
+</html>
