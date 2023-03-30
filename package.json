@@ -1,0 +1,22 @@
+{
+  "name": "blueprint",
+  "private": true,
+  "version": "0.2.0",
+  "description": "A modern tetris board-editing tool for practicing, sharing setups, analyzing situations, and more.",
+  "author": "iitalics",
+  "homepage": "https://github.com/blockfish/blueprint",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "preact": "^10.13.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.5.0",
+    "sass": "^1.60.0",
+    "vite": "^4.2.0"
+  }
+}

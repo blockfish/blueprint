@@ -1,6 +1,6 @@
 # [Blueprint][bp]
 
-![Blueprint Logo](resources/icon/160x160.png)
+![Blueprint Logo](assets/icon/160x160.png)
 
 Blueprint is tetris board-editing tool for practicing, sharing setups, analyzing
 situations, and more. It is intended to be a successor to the popular tool known as

@@ -1,0 +1,22 @@
+$b0: #111;
+$w0: #eee;
+
+body {
+    background: $b0;
+    color: $w0;
+    margin: 0;
+}
+
+h1, h2, h3, h4, div, p, main, article, section {
+    margin: 0;
+}
+
+main {
+    margin: 1em auto;
+    width: max-content;
+}
+
+h1 {
+    font-family: monospace;
+    font-size: 4em;
+}
